@@ -1,6 +1,6 @@
 <?php
 
-namespace LoyalmeSdk;
+namespace LoyalmeCRM\LoyalmePhpSdk;
 
 class Connection implements ConnectionInterface
 {
