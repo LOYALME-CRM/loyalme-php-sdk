@@ -41,21 +41,7 @@ class Connection implements ConnectionInterface
         curl_close($ch);
         $output = json_decode($output);
 
-        if (isset($output->data)) {
-            foreach ($output->data as $key => $itemData) {
-                if (is_numeric($key)) {
-                    foreach ($itemData as $itemField => $itemValue) {
-                        $this->{$itemField} = $itemValue;
-                    }
-                } else {
-                    $this->{$key} = $itemData;
-                }
-            }
-            $result = $this;
-        } else {
-            $result = $output;
-        }
-        return $result;
+        return $output;
     }
 
     protected function _setPath(string $path)
