@@ -1,0 +1,7 @@
+{
+    "name": "loyalme/loyalme-php-sdk",
+    "description": "sdk for working with loyalme REST API",
+    "type": "library",
+    "minimum-stability": "stable",
+    "require": {}
+}
