@@ -1,5 +1,5 @@
 {
-    "name": "LOYALME-CRM/loyalme-php-sdk",
+    "name": "loyalme-crm/loyalme-php-sdk",
     "description": "sdk for working with loyalme REST API",
     "type": "library",
     "require": {
