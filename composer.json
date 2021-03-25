@@ -1,7 +1,28 @@
 {
-    "name": "loyalme/loyalme-php-sdk",
+    "name": "LOYALME-CRM/loyalme-php-sdk",
     "description": "sdk for working with loyalme REST API",
     "type": "library",
     "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        
+    },
+    "require-dev": {
+
+    },
+    "conflict": {
+
+    },
+    "autoload": {
+        "psr-4": {
+            "LoyalmeCRM\\LoyalmePhpSdk\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+
+        }
+    },
+    "scripts": {
+
+    }
 }
