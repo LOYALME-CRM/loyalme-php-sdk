@@ -23,14 +23,14 @@ class Api
         if ($isItem) {
             foreach ($requiredFields as $field) {
                 if (!isset($array[$field])) {
-                    throw new LoyalmePhpSdk(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
+                    throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
                 }
             }
         } else {
             foreach ($array as $item) {
                 foreach ($requiredFields as $field) {
                     if (!isset($item[$field])) {
-                        throw new LoyalmePhpSdk(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
+                        throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
                     }
                 }
             }
