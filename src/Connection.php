@@ -1,16 +1,26 @@
 <?php
 
-namespace LoyalmeSdk;
+namespace LoyalmeCRM\LoyalmePhpSdk;
 
 class Connection implements ConnectionInterface
 {
+    const STATUS_CODE_SUCCESS = 200;
+    const STATUS_CODE_NOT_FOUND = 404;
+
     private $_url;
     private $_path = '';
     private $_token;
-    private $_brandId;
-    private $_pointId;
-    private $_personId;
+    public $brandId;
+    public $pointId;
+    public $personId;
 
+    /**
+     * @param string $token
+     * @param string $url
+     * @param int $brandId
+     * @param int $pointId
+     * @param int $personId
+     */
     public function __construct(
         string $token,
         string $url,
@@ -20,9 +30,9 @@ class Connection implements ConnectionInterface
     ) {
         $this->_token = $token;
         $this->_url = $url;
-        $this->_brandId = $brandId;
-        $this->_pointId = $pointId;
-        $this->_personId = $personId;
+        $this->brandId = $brandId;
+        $this->pointId = $pointId;
+        $this->personId = $personId;
     }
 
     private function _sendRequest(string $method, array $params)
@@ -39,23 +49,9 @@ class Connection implements ConnectionInterface
         }
         $output = curl_exec($ch);
         curl_close($ch);
-        $output = json_decode($output);
+        $output = json_decode($output, true);
 
-        if (isset($output->data)) {
-            foreach ($output->data as $key => $itemData) {
-                if (is_numeric($key)) {
-                    foreach ($itemData as $itemField => $itemValue) {
-                        $this->{$itemField} = $itemValue;
-                    }
-                } else {
-                    $this->{$key} = $itemData;
-                }
-            }
-            $result = $this;
-        } else {
-            $result = $output;
-        }
-        return $result;
+        return $output;
     }
 
     protected function _setPath(string $path)
@@ -66,7 +62,11 @@ class Connection implements ConnectionInterface
 
     public function sendGetRequest(string $action, array $params)
     {
-        $this->_setPath($action . '?' . http_build_query($params, '', '&'));
+        if ($params) {
+            $this->_setPath($action . '?' . http_build_query($params, '', '&'));
+        } else {
+            $this->_setPath($action);
+        }
 
         return $this->_sendRequest(self::METHOD_GET, $params);
     }
