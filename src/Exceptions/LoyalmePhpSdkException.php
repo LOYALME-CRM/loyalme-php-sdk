@@ -5,7 +5,7 @@ namespace LoyalmeCRM\LoyalmePhpSdk\Exceptions;
 use Exception;
 use Throwable;
 
-class LoyalmePhpSdk extends Exception
+class LoyalmePhpSdkException extends Exception
 {
     protected $_errorData = [];
 

@@ -3,7 +3,7 @@
 namespace LoyalmeCRM\LoyalmePhpSdk;
 
 use LoyalmeCRM\LoyalmePhpSdk\Connection;
-use LoyalmeCRM\LoyalmePhpSdk\Exceptions\LoyalmePhpSdk;
+use LoyalmeCRM\LoyalmePhpSdk\Exceptions\LoyalmePhpSdkException;
 
 class Api
 {
