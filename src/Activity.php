@@ -16,13 +16,9 @@ class Activity extends Api implements ActivityInterface
      */
     public $client_id;
     /**
-     * @var 
+     * @var string
      */
     public $client_hash;
-    /**
-     * @var array
-     */
-    protected $lastResult;
     /**
      * @var ClientInterface
      */
