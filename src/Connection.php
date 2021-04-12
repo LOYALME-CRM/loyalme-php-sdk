@@ -35,6 +35,11 @@ class Connection implements ConnectionInterface
         $this->personId = $personId;
     }
 
+    /**
+     * @param string $method
+     * @param array $params
+     * @return array
+     */
     private function _sendRequest(string $method, array $params)
     {
         $url = $this->_url . '/' . $this->getPath();
@@ -48,18 +53,27 @@ class Connection implements ConnectionInterface
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
         }
         $output = curl_exec($ch);
+        Log::log($output);
         curl_close($ch);
         $output = json_decode($output, true);
-
         return $output;
     }
 
+    /**
+     * @param string $path
+     * @return $this
+     */
     protected function _setPath(string $path)
     {
         $this->_path = $path;
         return $this;
     }
 
+    /**
+     * @param string $action
+     * @param array $params
+     * @return array
+     */
     public function sendGetRequest(string $action, array $params)
     {
         if ($params) {
@@ -71,6 +85,11 @@ class Connection implements ConnectionInterface
         return $this->_sendRequest(self::METHOD_GET, $params);
     }
 
+    /**
+     * @param string $action
+     * @param array $params
+     * @return array
+     */
     public function sendPostRequest(string $action, array $params)
     {
         $this->_setPath($action);
@@ -78,6 +97,11 @@ class Connection implements ConnectionInterface
         return $this->_sendRequest(self::METHOD_POST, $params);
     }
 
+    /**
+     * @param string $action
+     * @param array $params
+     * @return array
+     */
     public function sendPutRequest(string $action, array $params)
     {
         $this->_setPath($action);
@@ -85,6 +109,11 @@ class Connection implements ConnectionInterface
         return $this->_sendRequest(self::METHOD_PUT, $params);
     }
 
+    /**
+     * @param string $action
+     * @param array $params
+     * @return array
+     */
     public function sendDeleteRequest(string $action, array $params)
     {
         $this->_setPath($action);
@@ -92,6 +121,9 @@ class Connection implements ConnectionInterface
         return $this->_sendRequest(self::METHOD_PUT, $params);
     }
 
+    /**
+     * @return string
+     */
     public function getPath(): string
     {
         return $this->_path;

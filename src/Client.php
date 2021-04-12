@@ -4,7 +4,7 @@ namespace LoyalmeCRM\LoyalmePhpSdk;
 
 use LoyalmeCRM\LoyalmePhpSdk\Api;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ClientException;
-use LoyalmeCRM\LoyalmePhpSdk\ClientInterface;
+use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ClientInterface;
 
 class Client extends Api implements ClientInterface
 {
@@ -23,9 +23,10 @@ class Client extends Api implements ClientInterface
         return ClientException::class;
     }
 
+
     public function prepareDataForSave(
         string $externalId = null,
-        string $name,
+        string $name = null,
         string $lastName = null,
         string $middleName = null,
         array $birthdate = null,
@@ -335,6 +336,7 @@ class Client extends Api implements ClientInterface
         if ($externalId) {
             $result = $this->findByExternalId($externalId);
             if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
+                Log::log($result);
                 $result = null;
             } else {
                 $foundByExternalId = true;
