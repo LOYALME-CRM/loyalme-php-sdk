@@ -12,11 +12,11 @@ class Activity extends Api implements ActivityInterface
     const ACTION_LIST = 'activity/list';
     const ACTION_FIRE_EVENT = 'activity/fire-event';
     /**
-     * @var
+     * @var integer
      */
     public $client_id;
     /**
-     * @var
+     * @var 
      */
     public $client_hash;
     /**
