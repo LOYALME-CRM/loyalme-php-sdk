@@ -336,7 +336,6 @@ class Client extends Api implements ClientInterface
         if ($externalId) {
             $result = $this->findByExternalId($externalId);
             if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-                Log::log($result);
                 $result = null;
             } else {
                 $foundByExternalId = true;

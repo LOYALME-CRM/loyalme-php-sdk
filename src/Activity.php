@@ -2,9 +2,8 @@
 
 namespace LoyalmeCRM\LoyalmePhpSdk;
 
-use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ClientException;
+use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ActivityException;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ActivityInterface;
-use LoyalmeCRM\LoyalmePhpSdk\Connection;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ClientInterface;
 
 class Activity extends Api implements ActivityInterface
@@ -33,7 +32,7 @@ class Activity extends Api implements ActivityInterface
     {
         parent::__construct($connection);
         $this->client = $client;
-        $this->client_id = $client->client_hash[0]['id'];
+        $this->client_id = $client->id;
         $this->client_hash = $client->client_hash[0]['client_hash'];
     }
 
@@ -78,6 +77,6 @@ class Activity extends Api implements ActivityInterface
      */
     protected function getClassNameException() : string
     {
-        return ClientException::class;
+        return ActivityException::class;
     }
 }

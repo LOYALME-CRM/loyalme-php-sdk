@@ -53,7 +53,6 @@ class Connection implements ConnectionInterface
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
         }
         $output = curl_exec($ch);
-        Log::log($output);
         curl_close($ch);
         $output = json_decode($output, true);
         return $output;
