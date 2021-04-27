@@ -73,7 +73,7 @@ class Connection implements ConnectionInterface
      * @param array $params
      * @return array
      */
-    public function sendGetRequest(string $action, array $params)
+    public function sendGetRequest(string $action, array $params = [])
     {
         if ($params) {
             $this->_setPath($action . '?' . http_build_query($params, '', '&'));
@@ -89,7 +89,7 @@ class Connection implements ConnectionInterface
      * @param array $params
      * @return array
      */
-    public function sendPostRequest(string $action, array $params)
+    public function sendPostRequest(string $action, array $params = [])
     {
         $this->_setPath($action);
 
@@ -101,7 +101,7 @@ class Connection implements ConnectionInterface
      * @param array $params
      * @return array
      */
-    public function sendPutRequest(string $action, array $params)
+    public function sendPutRequest(string $action, array $params = [])
     {
         $this->_setPath($action);
 
@@ -113,11 +113,11 @@ class Connection implements ConnectionInterface
      * @param array $params
      * @return array
      */
-    public function sendDeleteRequest(string $action, array $params)
+    public function sendDeleteRequest(string $action, array $params = [])
     {
         $this->_setPath($action);
 
-        return $this->_sendRequest(self::METHOD_PUT, $params);
+        return $this->_sendRequest(self::METHOD_DELETE, $params);
     }
 
     /**

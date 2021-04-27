@@ -83,7 +83,9 @@ class Api
             foreach ($result['data'] as $field => $value) {
                 $this->attributes[$field] = $value;
             }
-        } elseif (isset($result['errors']) && $result['errors']) {
+        }elseif ($result['status_code']==200){
+            return $result;
+        }elseif (isset($result['errors']) && $result['errors']) {
             throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
         } else {
             throw new $classNameException('Unknown exception from in API', $result['status_code']);
