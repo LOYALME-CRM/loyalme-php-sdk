@@ -1,5 +1,5 @@
 # LoyalMe SDK library  
-##### Version: 1.0 от 27.04.2021  
+##### Version: 1.0 
 
 ##Category:  
 ___
