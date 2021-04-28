@@ -75,7 +75,7 @@ class Api
      * @param array $result
      * @return $this
      */
-    public function fill(array $result)
+    protected function fill(array $result)
     {
         $this->attributes = [];
         $classNameException = $this->getClassNameException();
@@ -84,11 +84,13 @@ class Api
                 $this->attributes[$field] = $value;
             }
         }elseif ($result['status_code']==200){
-            return $result;
+            $this->attributes['result']=$result;
         }elseif (isset($result['errors']) && $result['errors']) {
             throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
         } else {
-            throw new $classNameException('Unknown exception from in API', $result['status_code']);
+            $details = is_array($result) ? json_encode($result) : (string) $result;
+            $errorMessage = sprintf('Another exception from API. Details: %s',$details);
+            throw new $classNameException($errorMessage, $result['status_code']);
         }
 
         return $this;
