@@ -21,9 +21,9 @@ class Category extends Api implements CategoryInterface
     /**
      * Category constructor.
      * @param Connection $connection
-     * @param CategoryInterface|null $parentCategoryExtId
+     * @param int|null $parentCategoryExtId
      */
-    public function __construct(Connection $connection, CategoryInterface $parentCategoryExtId = null)
+    public function __construct(Connection $connection, int $parentCategoryExtId = null)
     {
         parent::__construct($connection);
         $this->parentCategoryExtId = $parentCategoryExtId;
@@ -37,8 +37,7 @@ class Category extends Api implements CategoryInterface
      */
     public function get(string $extCategoryId, string $name): CategoryInterface
     {
-        $id = $this->findByExtCategoryId($extCategoryId);
-        $result = $this->update($id, $extCategoryId, $name, $this->parentCategory);
+        $result = $this->update($extCategoryId, $name, $this->parentCategoryExtId);
         return $result;
     }
 
@@ -47,7 +46,7 @@ class Category extends Api implements CategoryInterface
      * @return int
      * @throws CategoryException
      */
-    protected function findByExtCategoryId(string $extCategoryId): int
+    protected function findByExtItemId(string $extCategoryId): int
     {
         $url = self::LIST_OF_CATEGORIES;
         $result = $this->_connection->sendGetRequest($url);
@@ -71,7 +70,7 @@ class Category extends Api implements CategoryInterface
      */
     protected function update(string $extCategoryId, string $name, int $parentExtCategoryId = null): CategoryInterface
     {
-        $id = $this->findByExtCategoryId($extCategoryId);
+        $id = $this->findByExtItemId($extCategoryId);
         $url = sprintf(self::UPDATE_CATEGORY, $id);
         $data = $this->fillParams($extCategoryId, $name, $parentExtCategoryId);
         $result = $this->_connection->sendPutRequest($url, $data);
@@ -117,7 +116,7 @@ class Category extends Api implements CategoryInterface
      */
     public function delete(string $extCategoryId)
     {
-        $id = $this->findByExtCategoryId($extCategoryId);
+        $id = $this->findByExtItemId($extCategoryId);
         $url = sprintf(self::DELETE_CATEGORY, $id);
         $result = $this->_connection->sendDeleteRequest($url);
         return $this->fill($result);
