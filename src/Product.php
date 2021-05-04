@@ -3,7 +3,10 @@
 namespace LoyalmeCRM\LoyalmePhpSdk;
 
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductException;
+use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductSearchException;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ProductInterface;
+use mysql_xdevapi\Exception;
+use const src\API_URL;
 
 class Product extends Api implements ProductInterface
 {
@@ -24,10 +27,6 @@ class Product extends Api implements ProductInterface
      * @var array
      */
     protected $_categories;
-    /**
-     * @var array
-     */
-    private $categories;
 
     /**
      * Product constructor.
@@ -37,20 +36,38 @@ class Product extends Api implements ProductInterface
     public function __construct(Connection $connection, array $categories)
     {
         parent::__construct($connection);
-        $this->categories = $categories;
+        $this->_categories = $categories;
     }
 
     /**
-     * @param string $extCategoryId
-     * @param string $name
-     * @return CategoryInterface|null
-     * @throws CategoryException
+     * @param string $title
+     * @param float $price
+     * @param string $photo
+     * @param string $extItemId
+     * @param string $barcode
+     * @param int $isActive
+     * @param int $typeId
+     * @param float $accrualRate
+     * @param array $aliases
+     * @param mixed ...$attribute
+     * @return ProductInterface
+     * @throws ProductSearchException
      */
-    public function get(string $extCategoryId, string $name): CategoryInterface
+    public function get(
+        string $title,
+        float $price,
+        string $photo,
+        string $extItemId = null,
+        string $barcode = null,
+        int $isActive = 1,
+        int $typeId = 1,
+        float $accrualRate = 1,
+        array $aliases = []
+    ): ProductInterface
     {
-        $id = $this->findByExtCategoryId($extCategoryId);
-        $result = $this->update($id, $extCategoryId, $name, $this->parentCategory);
-        return $result;
+        $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
+        $result = $this->_connection->sendGetRequest(sprintf(self::SHOW_PRODUCT, $itemId));
+        return $this->fill($result);
     }
 
     /**
@@ -58,15 +75,65 @@ class Product extends Api implements ProductInterface
      * @return int
      * @throws CategoryException
      */
-    protected function findByExtItemId(string $extCategoryId): int
+    protected function findByExtItemIdOrBarcode(string $extCategoryId = null, string $barcode = null): int
     {
-        $url = self::LIST_OF_CATEGORIES;
+        $url = self::LIST_OF_PRODUCTS;
         $result = $this->_connection->sendGetRequest($url);
+        if (isset($result['status_code']) and $result['status_code']!=200){
+            $messageIfMessageAbsent =  sprintf('Сообщение отсутствует, результат операции: %s',print_r($result,true));
+            $message = isset($result['message']) ? $result['message'] : $messageIfMessageAbsent;
+            Log::printData('Ошибка');
+            throw new ProductException($message,$result['status_code']);
+        }
+        Log::printData($result, 'result of find:');
         $search = array_values(array_filter($result['data'], function ($innerArray) use ($extCategoryId) {
             return $innerArray['external_id'] == $extCategoryId;
         }));
         if (!isset($search[0]['id'])) {
-            throw new CategoryException('Category was not found', 404);
+            throw new ProductSearchException('Product was not found by external ID', 404);
+        }
+        $categoryId = (integer)$search[0]['id'];
+
+        return $categoryId;
+    }
+
+    /**
+     * @param string $extCategoryId
+     * @param string $name
+     * @param int|null $parentExtCategoryId
+     * @return CategoryInterface
+     */
+    public function create(string $extCategoryId, string $name, int $parentExtCategoryId = null): CategoryInterface
+    {
+        $url = self::CREATE_CATEGORY;
+        $data = $this->fillParams($extCategoryId, $name, $parentExtCategoryId);
+        $result = $this->_connection->sendPostRequest($url, $data);
+        $this->fill($result);
+        return $this;
+    }
+
+    /**
+     * @param string $extProductId
+     * @return Product
+     */
+    public function delete(string $extProductId)
+    {
+        $id = $this->findByExtCategoryId($extCategoryId);
+        $url = sprintf(self::DELETE_CATEGORY, $id);
+        $result = $this->_connection->sendDeleteRequest($url);
+        return $this->fill($result);
+    }
+
+    protected function findByItemBarcode(int $barcode): int
+    {
+        $url = self::LIST_OF_PRODUCTS;
+        $result = $this->_connection->sendGetRequest($url);
+        Log::printData($result, 'result of find:');
+        $search = array_values(array_filter($result['data'], function ($innerArray) use ($extCategoryId) {
+            return $innerArray['barcode'] == $barcode;
+        }));
+        if (!isset($search[0]['id'])) {
+            throw new ProductSearchException('Product was not found by barcode', 404);
         }
         $categoryId = (integer)$search[0]['id'];
 
@@ -102,33 +169,6 @@ class Product extends Api implements ProductInterface
             'parent_id' => $parentExtCategoryId,
             'external_id' => $extCategoryId,
         ];
-    }
-
-    /**
-     * @param string $extCategoryId
-     * @param string $name
-     * @param int|null $parentExtCategoryId
-     * @return CategoryInterface
-     */
-    public function create(string $extCategoryId, string $name, int $parentExtCategoryId = null): CategoryInterface
-    {
-        $url = self::CREATE_CATEGORY;
-        $data = $this->fillParams($extCategoryId, $name, $parentExtCategoryId);
-        $result = $this->_connection->sendPostRequest($url, $data);
-        $this->fill($result);
-        return $this;
-    }
-
-    /**
-     * @param string $extProductId
-     * @return Product
-     */
-    public function delete(string $extProductId)
-    {
-        $id = $this->findByExtCategoryId($extCategoryId);
-        $url = sprintf(self::DELETE_CATEGORY, $id);
-        $result = $this->_connection->sendDeleteRequest($url);
-        return $this->fill($result);
     }
 
     /**
