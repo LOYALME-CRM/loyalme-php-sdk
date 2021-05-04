@@ -56,32 +56,49 @@ class Api
     {
         if ($isItem) {
             foreach ($requiredFields as $field) {
-                if (!isset($array[$field])) {
-                    throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
-                }
+                $this->_checkAvailabilityField($field, $array, $arrayKey);
             }
         } else {
             foreach ($array as $item) {
                 foreach ($requiredFields as $field) {
-                    if (!isset($item[$field])) {
-                        throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
-                    }
+                    $this->_checkAvailabilityField($field, $item, $arrayKey);
                 }
             }
         }
     }
 
     /**
-     * @param array $result
-     * @return $this
+     * @param string|int $field
+     * @param array $array
+     * @param string|int $arrayKey
+     * @throws LoyalmePhpSdkException
      */
+    protected function _checkAvailabilityField($field, array $array, $arrayKey)
+    {
+        if (is_array($field)) {
+            $allowEmpty = $field['allowEmpty'];
+            $field = $field['field'];
+        } else {
+            $allowEmpty = false;
+        }
+        if ($allowEmpty) {
+            if (!array_key_exists($field, $array)) {
+                throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
+            }
+        } else {
+            if (!isset($array[$field]) || empty($array[$field])) {
+                throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
+            }
+        }
+    }
+
     public function fill(array $result)
     {
         $this->attributes = [];
         $classNameException = $this->getClassNameException();
         if (isset($result['data'])) {
             foreach ($result['data'] as $field => $value) {
-                $this->attributes[$field] = $value;
+                $this->$field = $value;
             }
         } elseif (isset($result['errors']) && $result['errors']) {
             throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
