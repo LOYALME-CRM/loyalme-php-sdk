@@ -324,7 +324,7 @@ class Client extends Api implements ClientInterface
             $this->validateArrayStructure(['day', 'month', 'year', 'hours', 'minutes', 'seconds'], $dateOfRegistered, 'dateOfRegistered');
         }
         if ($attributes) {
-            $this->validateArrayStructure(['key', 'value'], $attributes, 'attribute', false);
+            $this->validateArrayStructure(['key', ['field' => 'value', 'allowEmpty' => true]], $attributes, 'attribute', false);
         }
 
         $foundByExternalId = false;
