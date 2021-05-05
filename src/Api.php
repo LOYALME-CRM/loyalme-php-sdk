@@ -112,5 +112,5 @@ abstract class Api
     /**
      * @return string
      */
-    abstract function getClassNameException(): string;
+    abstract protected function getClassNameException(): string;
 }
