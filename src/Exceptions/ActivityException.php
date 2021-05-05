@@ -2,7 +2,7 @@
 
 namespace LoyalmeCRM\LoyalmePhpSdk\Exceptions;
 
-use Throwable;
+use LoyalmeCRM\LoyalmePhpSdk\Exceptions\LoyalmePhpSdkException;
 
 class ActivityException extends LoyalmePhpSdkException
 {

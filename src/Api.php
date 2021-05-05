@@ -21,7 +21,7 @@ class Api
 
     /**
      * Api constructor.
-     * @param \LoyalmeCRM\LoyalmePhpSdk\Connection $connection
+     * @param Connection $connection
      */
     public function __construct(Connection $connection)
     {

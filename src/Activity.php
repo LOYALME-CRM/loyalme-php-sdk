@@ -10,14 +10,17 @@ class Activity extends Api implements ActivityInterface
 {
     const ACTION_LIST = 'activity/list';
     const ACTION_FIRE_EVENT = 'activity/fire-event';
+
     /**
      * @var integer
      */
     public $client_id;
+
     /**
      * @var string
      */
     public $client_hash;
+
     /**
      * @var ClientInterface
      */
@@ -47,9 +50,9 @@ class Activity extends Api implements ActivityInterface
     }
 
     /**
-     * @param string $activity_key
-     * @param string $activity_datetime
-     * @param array $activity_attributes
+     * @param string $activityKey
+     * @param string $activityDatetime
+     * @param array $activityAttributes
      * @return Activity
      */
     public function fireEvent(
