@@ -200,7 +200,7 @@ class Client extends Api implements ClientInterface
     protected function update(
         int $id,
         string $externalId = null,
-        string $name,
+        string $name = null,
         string $lastName = null,
         string $middleName = null,
         array $birthdate = null,
