@@ -5,7 +5,7 @@ namespace LoyalmeCRM\LoyalmePhpSdk;
 use LoyalmeCRM\LoyalmePhpSdk\Connection;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\LoyalmePhpSdkException;
 
-class Api
+abstract class Api
 {
     const CLIENT_GENDER_NOT_SELECTED = 0;
     const CLIENT_GENDER_MALE = 1;
@@ -108,4 +108,9 @@ class Api
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    abstract function getClassNameException(): string;
 }

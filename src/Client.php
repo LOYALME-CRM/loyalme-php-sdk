@@ -18,12 +18,32 @@ class Client extends Api implements ClientInterface
     const ACTION_MERGE_HASH = 'client/%d/merge/%s';
     const ACTION_SHOW = 'client/%d';
 
-    protected function getClassNameException()
+    /**
+     * @inheritdoc
+     */
+    protected function getClassNameException(): string
     {
         return ClientException::class;
     }
 
-
+    /**
+     * @param string $externalId
+     * @param string $name
+     * @param string $lastName
+     * @param string $middleName
+     * @param array $birthdate
+     * @param int $gender
+     * @param array $phones
+     * @param array $emails
+     * @param string $address
+     * @param string $passportSeria
+     * @param string $passportNumber
+     * @param array $passportIssuedDate
+     * @param string $passportIssuedBy
+     * @param array $dateOfRegistered
+     * @param array $attributes
+     * @return array
+     */
     public function prepareDataForSave(
         string $externalId = null,
         string $name = null,
