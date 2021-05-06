@@ -2,6 +2,8 @@
 
 namespace LoyalmeCRM\LoyalmePhpSdk;
 
+use LoyalmeCRM\LoyalmePhpSdk\ConnectionInterface;
+
 class Connection implements ConnectionInterface
 {
     const STATUS_CODE_SUCCESS = 200;
