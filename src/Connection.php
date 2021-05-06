@@ -2,7 +2,7 @@
 
 namespace LoyalmeCRM\LoyalmePhpSdk;
 
-use LoyalmeCRM\LoyalmePhpSdk\ConnectionInterface;
+use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ConnectionInterface;
 
 class Connection implements ConnectionInterface
 {
