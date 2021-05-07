@@ -232,6 +232,10 @@ class Client extends Api implements ClientInterface
      */
     public function findByFingerprint(string $fingerprint)
     {
+        if (empty($fingerprint)) {
+            throw new ClientException('Fingerprint not be empty', 400);
+        }
+
         return $this->_connection->sendGetRequest(self::ACTION_CLIENT, [
             'client_hash' => $fingerprint,
         ]);
@@ -395,6 +399,9 @@ class Client extends Api implements ClientInterface
                 $foundByPhone = true;
             }
         }
+        if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 1) {
+            throw new ClientException('Searching returned more than one result', 400, $result);
+        }
         $params = [
             $externalId, $name, $lastName, $middleName, $birthdate, $gender, $phones,
             $emails, $address, $passportSeria, $passportNumber, $passportIssuedDate, 
@@ -449,6 +456,9 @@ class Client extends Api implements ClientInterface
             if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
                 $result = null;
             }
+        }
+        if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 1) {
+            throw new ClientException('Searching returned more than one result', 400, $result);
         }
         if (is_null($result)) {
             $client = $this->create(null, 'subscriber', null, null, null, self::CLIENT_GENDER_NOT_SELECTED, null, [$email]);
