@@ -86,7 +86,7 @@ abstract class Api
                 throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
             }
         } else {
-            if (!isset($array[$field]) || empty($array[$field])) {
+            if (!isset($array[$field]) || (empty($array[$field]) && !is_numeric($array[$field]))) {
                 throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
             }
         }

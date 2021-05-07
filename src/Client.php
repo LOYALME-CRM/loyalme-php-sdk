@@ -431,7 +431,7 @@ class Client extends Api implements ClientInterface
                 if ($resultMergeHash['status_code'] == Connection::STATUS_CODE_SUCCESS) {
                     $client = $this->getById($client->id);
                 } else {
-                    throw new ClientException('Error in answer from API at client merge whit fingerprint', $resultMergeHash['status_code'] ?? 400, $resultMergeHash);
+                    throw new ClientException('Error in answer from API at client merge whith fingerprint', $resultMergeHash['status_code'] ?? 400, $resultMergeHash);
                 }
             }
         }
@@ -441,15 +441,18 @@ class Client extends Api implements ClientInterface
 
     /**
      * @param string $fingerPrint
-     * @param string $email -> ["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]
+     * @param string $email -> ["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4 (1 - valid, 2 - invalid, 3 - need verification, 4 - stop list)]
      */
     public function subscribeClientByEmail(string $fingerPrint, array $email): ClientInterface
     {
         $this->validateArrayStructure(['contact', 'subscribe_status', 'validate_status'], $email, 'email');
 
-        $result = $this->findByFingerprint($fingerPrint);
-        if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-            $result = null;
+        $result = null;
+        if ($fingerPrint) {
+            $result = $this->findByFingerprint($fingerPrint);
+            if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
+                $result = null;
+            }
         }
         if (is_null($result)) {
             $result = $this->findByEmail($email['contact']);
@@ -481,7 +484,7 @@ class Client extends Api implements ClientInterface
         }
 
         $clientHashes = array_column($client->client_hash, 'client_hash');
-        if (!in_array($fingerPrint, $clientHashes)) {
+        if ($fingerPrint && !in_array($fingerPrint, $clientHashes)) {
             $resultMergeHash = $this->clientMergeHash($client->id, $fingerPrint);
             if ($resultMergeHash['status_code'] == Connection::STATUS_CODE_SUCCESS) {
                 $client = $this->getById($client->id);
