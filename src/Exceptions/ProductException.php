@@ -2,7 +2,7 @@
 
 namespace LoyalmeCRM\LoyalmePhpSdk\Exceptions;
 
-class ProductException extends \Exception
+class ProductException extends LoyalmePhpSdkException
 {
 
 }

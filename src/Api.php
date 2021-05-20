@@ -86,7 +86,7 @@ class Api
         }elseif ($result['status_code']==200){
             $this->attributes['result']=$result;
         }elseif (isset($result['errors']) && $result['errors']) {
-            throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
+            throw new $classNameException($result['message'], $result['status_code'], $result['errors']);
         } else {
             $details = is_array($result) ? json_encode($result) : (string) $result;
             $errorMessage = sprintf('Another exception from API. Details: %s',$details);
