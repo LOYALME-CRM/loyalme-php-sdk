@@ -9,7 +9,7 @@ class LoyalmePhpSdkException extends Exception
 {
     protected $_errorData = [];
 
-    public function __construct(string $message = "", int $code = 0, $errorData = [], Throwable $previous = null)
+    public function __construct(string $message = "", int $code = 0, array $errorData = [], Throwable $previous = null)
     {
         $this->_errorData = $errorData;
         parent::__construct($message, $code, $previous);

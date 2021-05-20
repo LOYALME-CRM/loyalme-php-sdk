@@ -5,7 +5,6 @@ namespace LoyalmeCRM\LoyalmePhpSdk;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductException;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductSearchException;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ProductInterface;
-use mysql_xdevapi\Exception;
 use const src\API_URL;
 
 class Product extends Api implements ProductInterface
@@ -42,133 +41,208 @@ class Product extends Api implements ProductInterface
     /**
      * @param string $title
      * @param float $price
-     * @param string $photo
-     * @param string $extItemId
-     * @param string $barcode
+     * @param string|null $photo
+     * @param int|null $extItemId
+     * @param string|null $barcode
      * @param int $isActive
      * @param int $typeId
      * @param float $accrualRate
+     * @param array $categories
      * @param array $aliases
-     * @param mixed ...$attribute
+     * @param array $customFields
      * @return ProductInterface
-     * @throws ProductSearchException
+     * @throws ProductException
      */
     public function get(
         string $title,
         float $price,
-        string $photo,
-        string $extItemId = null,
+        string $photo = null,
+        int $extItemId = null,
         string $barcode = null,
         int $isActive = 1,
         int $typeId = 1,
         float $accrualRate = 1,
-        array $aliases = []
+        array $categories = null,
+        array $aliases = null,
+        array $customFields = null
     ): ProductInterface
     {
-        $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
-        $result = $this->_connection->sendGetRequest(sprintf(self::SHOW_PRODUCT, $itemId));
-        return $this->fill($result);
+        try {
+            $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
+            $result = $this->update($id, $title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
+            return $result;
+        } catch (ProductSearchException $e) {
+            if (empty($categories)){
+                throw new ProductException('Categories can not be empty',422,['categories'=>'must be filled']);
+            }
+            $result = $this->create($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
+            return $result;
+        }
     }
 
     /**
-     * @param string $extCategoryId
+     * @param int|null $extItemId
+     * @param string|null $barcode
      * @return int
-     * @throws CategoryException
+     * @throws ProductException
+     * @throws ProductSearchException
      */
-    protected function findByExtItemIdOrBarcode(string $extCategoryId = null, string $barcode = null): int
+    protected function findByExtItemIdOrBarcode(int $extItemId = null, string $barcode = null): int
     {
+        if (empty($extItemId) and empty($barcode)) throw new ProductException('At least one of the parameters must be specified.');
         $url = self::LIST_OF_PRODUCTS;
-        $result = $this->_connection->sendGetRequest($url);
-        if (isset($result['status_code']) and $result['status_code']!=200){
-            $messageIfMessageAbsent =  sprintf('Сообщение отсутствует, результат операции: %s',print_r($result,true));
+        $parameters = [];
+        if ($extItemId) $parameters['ext_item_id'] = $extItemId;
+        if ($barcode) $parameters['barcode'] = $barcode;
+
+        $result = $this->_connection->sendGetRequest($url, $parameters);
+        if (isset($result['status_code']) and $result['status_code'] != 200) {
+            $messageIfMessageAbsent = sprintf('Message is absent, result is: %s', print_r($result, true));
             $message = isset($result['message']) ? $result['message'] : $messageIfMessageAbsent;
-            Log::printData('Ошибка');
-            throw new ProductException($message,$result['status_code']);
+            throw new ProductException($message, $result['status_code']);
+        } else {
+            if ($result['meta']['pagination']['total'] === 0) {
+                throw new ProductSearchException('Product was not found by external ID', 404);
+            }
         }
-        Log::printData($result, 'result of find:');
-        $search = array_values(array_filter($result['data'], function ($innerArray) use ($extCategoryId) {
-            return $innerArray['external_id'] == $extCategoryId;
-        }));
-        if (!isset($search[0]['id'])) {
-            throw new ProductSearchException('Product was not found by external ID', 404);
+        if (isset($result['data'][0]['id'])) {
+            return $result['data'][0]['id'];
+        } else {
+            throw new  ProductSearchException('Ошибка при поиске через API: ', $result['status_code']);
         }
-        $categoryId = (integer)$search[0]['id'];
-
-        return $categoryId;
     }
 
     /**
-     * @param string $extCategoryId
-     * @param string $name
-     * @param int|null $parentExtCategoryId
-     * @return CategoryInterface
+     * @param int $id
+     * @param string $title
+     * @param float $price
+     * @param string|null $photo
+     * @param int|null $extItemId
+     * @param string|null $barcode
+     * @param int $isActive
+     * @param int $typeId
+     * @param float $accrualRate
+     * @param array $categories
+     * @param array $aliases
+     * @param array $customFields
+     * @return ProductInterface
      */
-    public function create(string $extCategoryId, string $name, int $parentExtCategoryId = null): CategoryInterface
+    protected function update(
+        int $id,
+        string $title,
+        float $price,
+        string $photo = null,
+        int $extItemId = null,
+        string $barcode = null,
+        int $isActive = 1,
+        int $typeId = 1,
+        float $accrualRate = 1,
+        array $categories = [],
+        array $aliases = [],
+        array $customFields = []
+    ): ProductInterface
     {
-        $url = self::CREATE_CATEGORY;
-        $data = $this->fillParams($extCategoryId, $name, $parentExtCategoryId);
-        $result = $this->_connection->sendPostRequest($url, $data);
-        $this->fill($result);
-        return $this;
-    }
-
-    /**
-     * @param string $extProductId
-     * @return Product
-     */
-    public function delete(string $extProductId)
-    {
-        $id = $this->findByExtCategoryId($extCategoryId);
-        $url = sprintf(self::DELETE_CATEGORY, $id);
-        $result = $this->_connection->sendDeleteRequest($url);
-        return $this->fill($result);
-    }
-
-    protected function findByItemBarcode(int $barcode): int
-    {
-        $url = self::LIST_OF_PRODUCTS;
-        $result = $this->_connection->sendGetRequest($url);
-        Log::printData($result, 'result of find:');
-        $search = array_values(array_filter($result['data'], function ($innerArray) use ($extCategoryId) {
-            return $innerArray['barcode'] == $barcode;
-        }));
-        if (!isset($search[0]['id'])) {
-            throw new ProductSearchException('Product was not found by barcode', 404);
-        }
-        $categoryId = (integer)$search[0]['id'];
-
-        return $categoryId;
-    }
-
-    /**
-     * @param string $extCategoryId
-     * @param string $name
-     * @param int|null $parentExtCategoryId
-     * @return CategoryInterface
-     * @throws CategoryException
-     */
-    protected function update(string $extCategoryId, string $name, int $parentExtCategoryId = null): CategoryInterface
-    {
-        $id = $this->findByExtCategoryId($extCategoryId);
-        $url = sprintf(self::UPDATE_CATEGORY, $id);
-        $data = $this->fillParams($extCategoryId, $name, $parentExtCategoryId);
+        $url = sprintf(self::UPDATE_PRODUCT, $id);
+        $data = $this->fillParams($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
         $result = $this->_connection->sendPutRequest($url, $data);
         return $this->fill($result);
     }
 
     /**
-     * @param string $extCategoryId
-     * @param string $name
-     * @param int|null $parentExtCategoryId
+     * @param string $title
+     * @param float $price
+     * @param string|null $photo
+     * @param int|null $extItemId
+     * @param string|null $barcode
+     * @param int $isActive
+     * @param int $typeId
+     * @param float $accrualRate
+     * @param array $categories
+     * @param array $aliases
+     * @param array $customFields
      * @return array
      */
-    private function fillParams(string $extCategoryId, string $name, int $parentExtCategoryId = null): array
+    private function fillParams(
+        string $title,
+        float $price,
+        string $photo = null,
+        int $extItemId = null,
+        string $barcode = null,
+        int $isActive = 1,
+        int $typeId = 1,
+        float $accrualRate = 1,
+        array $categories = [],
+        array $aliases = [],
+        array $customFields = []
+    ): array
     {
-        return [
-            'name' => $name,
-            'parent_id' => $parentExtCategoryId,
-            'external_id' => $extCategoryId,
+
+        $parametersArray = [
+            'title' => $title,
+            'ext_item_id' => $extItemId,
+            'barcode' => $barcode,
+            'price' => $price,
+            'is_active' => $isActive,
+            'ext_photo_url' => $photo,
+            'type_id' => $typeId,
+            'categories' => $categories,
+            'accrual_rate' => $accrualRate,
+            'aliases' => $aliases,
         ];
+        foreach ($customFields as $key => $value) {
+            $parametersArray[$key] = $value;
+        }
+        Log::printData($parametersArray,'Массив параметров');
+        return $parametersArray;
+    }
+
+    /**
+     * @param string $title
+     * @param float $price
+     * @param string|null $photo
+     * @param int|null $extItemId
+     * @param string|null $barcode
+     * @param int $isActive
+     * @param int $typeId
+     * @param float $accrualRate
+     * @param array $categories
+     * @param array $aliases
+     * @param array $customFields
+     * @return ProductInterface
+     */
+    public function create(
+        string $title,
+        float $price,
+        string $photo = null,
+        int $extItemId = null,
+        string $barcode = null,
+        int $isActive = 1,
+        int $typeId = 1,
+        float $accrualRate = 1,
+        array $categories = [],
+        array $aliases = [],
+        array $customFields = []
+    ): ProductInterface
+    {
+        $url = self::CREATE_PRODUCT;
+        $data = $this->fillParams($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
+        $result = $this->_connection->sendPostRequest($url, $data);
+        return $this->fill($result);
+    }
+
+    /**
+     * @param string|null $extItemId
+     * @param string|null $barcode
+     * @return ProductInterface
+     * @throws ProductException
+     * @throws ProductSearchException
+     */
+    public function delete(string $extItemId = null, string $barcode = null): ProductInterface
+    {
+        $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
+        $url = sprintf(self::DELETE_PRODUCT, $id);
+        $result = $this->_connection->sendDeleteRequest($url);
+        return $this->fill($result);
     }
 
     /**
