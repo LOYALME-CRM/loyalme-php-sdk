@@ -2,7 +2,9 @@
 
 namespace LoyalmeCRM\LoyalmePhpSdk\Exceptions;
 
-class ActivityException extends \Exception
+use LoyalmeCRM\LoyalmePhpSdk\Exceptions\LoyalmePhpSdkException;
+
+class ActivityException extends LoyalmePhpSdkException
 {
 
 }

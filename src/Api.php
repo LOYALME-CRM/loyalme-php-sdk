@@ -5,7 +5,7 @@ namespace LoyalmeCRM\LoyalmePhpSdk;
 use LoyalmeCRM\LoyalmePhpSdk\Connection;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\LoyalmePhpSdkException;
 
-class Api
+abstract class Api
 {
     const CLIENT_GENDER_NOT_SELECTED = 0;
     const CLIENT_GENDER_MALE = 1;
@@ -21,7 +21,7 @@ class Api
 
     /**
      * Api constructor.
-     * @param \LoyalmeCRM\LoyalmePhpSdk\Connection $connection
+     * @param Connection $connection
      */
     public function __construct(Connection $connection)
     {
@@ -56,22 +56,43 @@ class Api
     {
         if ($isItem) {
             foreach ($requiredFields as $field) {
-                if (!isset($array[$field])) {
-                    throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
-                }
+                $this->_checkAvailabilityField($field, $array, $arrayKey);
             }
         } else {
             foreach ($array as $item) {
                 foreach ($requiredFields as $field) {
-                    if (!isset($item[$field])) {
-                        throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
-                    }
+                    $this->_checkAvailabilityField($field, $item, $arrayKey);
                 }
             }
         }
     }
 
     /**
+     * @param string|int $field
+     * @param array $array
+     * @param string|int $arrayKey
+     * @throws LoyalmePhpSdkException
+     */
+    protected function _checkAvailabilityField($field, array $array, $arrayKey)
+    {
+        if (is_array($field)) {
+            $allowEmpty = $field['allowEmpty'];
+            $field = $field['field'];
+        } else {
+            $allowEmpty = false;
+        }
+        if ($allowEmpty) {
+            if (!array_key_exists($field, $array)) {
+                throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
+            }
+        } else {
+            if (!isset($array[$field]) || (empty($array[$field]) && !is_numeric($array[$field]))) {
+                throw new LoyalmePhpSdkException(sprintf('Attribute %s is required for array %s', $field, $arrayKey), 400, $array);
+            }
+        }
+    }
+
+   /**
      * @param array $result
      * @return $this
      */
@@ -81,7 +102,7 @@ class Api
         $classNameException = $this->getClassNameException();
         if (isset($result['data'])) {
             foreach ($result['data'] as $field => $value) {
-                $this->attributes[$field] = $value;
+                $this->$field = $value;
             }
         }elseif ($result['status_code']==200){
             $this->attributes['result']=$result;
@@ -95,4 +116,10 @@ class Api
 
         return $this;
     }
+
+
+    /**
+     * @return string
+     */
+    abstract protected function getClassNameException(): string;
 }

@@ -18,12 +18,32 @@ class Client extends Api implements ClientInterface
     const ACTION_MERGE_HASH = 'client/%d/merge/%s';
     const ACTION_SHOW = 'client/%d';
 
-    protected function getClassNameException()
+    /**
+     * @inheritdoc
+     */
+    protected function getClassNameException(): string
     {
         return ClientException::class;
     }
 
-
+    /**
+     * @param string $externalId
+     * @param string $name
+     * @param string $lastName
+     * @param string $middleName
+     * @param array $birthdate
+     * @param int $gender
+     * @param array $phones
+     * @param array $emails
+     * @param string $address
+     * @param string $passportSeria
+     * @param string $passportNumber
+     * @param array $passportIssuedDate
+     * @param string $passportIssuedBy
+     * @param array $dateOfRegistered
+     * @param array $attributes
+     * @return array
+     */
     public function prepareDataForSave(
         string $externalId = null,
         string $name = null,
@@ -180,7 +200,7 @@ class Client extends Api implements ClientInterface
     protected function update(
         int $id,
         string $externalId = null,
-        string $name,
+        string $name = null,
         string $lastName = null,
         string $middleName = null,
         array $birthdate = null,
@@ -212,6 +232,10 @@ class Client extends Api implements ClientInterface
      */
     public function findByFingerprint(string $fingerprint)
     {
+        if (empty($fingerprint)) {
+            throw new ClientException('Fingerprint not be empty', 400);
+        }
+
         return $this->_connection->sendGetRequest(self::ACTION_CLIENT, [
             'client_hash' => $fingerprint,
         ]);
@@ -325,7 +349,7 @@ class Client extends Api implements ClientInterface
             $this->validateArrayStructure(['day', 'month', 'year', 'hours', 'minutes', 'seconds'], $dateOfRegistered, 'dateOfRegistered');
         }
         if ($attributes) {
-            $this->validateArrayStructure(['key', 'value'], $attributes, 'attribute', false);
+            $this->validateArrayStructure(['key', ['field' => 'value', 'allowEmpty' => true]], $attributes, 'attribute', false);
         }
 
         $foundByExternalId = false;
@@ -375,6 +399,9 @@ class Client extends Api implements ClientInterface
                 $foundByPhone = true;
             }
         }
+        if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 1) {
+            throw new ClientException('Searching returned more than one result', 400, $result);
+        }
         $params = [
             $externalId, $name, $lastName, $middleName, $birthdate, $gender, $phones,
             $emails, $address, $passportSeria, $passportNumber, $passportIssuedDate, 
@@ -404,7 +431,7 @@ class Client extends Api implements ClientInterface
                 if ($resultMergeHash['status_code'] == Connection::STATUS_CODE_SUCCESS) {
                     $client = $this->getById($client->id);
                 } else {
-                    throw new ClientException('Error in answer from API at client merge whit fingerprint', $resultMergeHash['status_code'] ?? 400, $resultMergeHash);
+                    throw new ClientException('Error in answer from API at client merge whith fingerprint', $resultMergeHash['status_code'] ?? 400, $resultMergeHash);
                 }
             }
         }
@@ -414,21 +441,27 @@ class Client extends Api implements ClientInterface
 
     /**
      * @param string $fingerPrint
-     * @param string $email -> ["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]
+     * @param string $email -> ["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4 (1 - valid, 2 - invalid, 3 - need verification, 4 - stop list)]
      */
     public function subscribeClientByEmail(string $fingerPrint, array $email): ClientInterface
     {
         $this->validateArrayStructure(['contact', 'subscribe_status', 'validate_status'], $email, 'email');
 
-        $result = $this->findByFingerprint($fingerPrint);
-        if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-            $result = null;
+        $result = null;
+        if ($fingerPrint) {
+            $result = $this->findByFingerprint($fingerPrint);
+            if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
+                $result = null;
+            }
         }
         if (is_null($result)) {
             $result = $this->findByEmail($email['contact']);
             if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
                 $result = null;
             }
+        }
+        if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 1) {
+            throw new ClientException('Searching returned more than one result', 400, $result);
         }
         if (is_null($result)) {
             $client = $this->create(null, 'subscriber', null, null, null, self::CLIENT_GENDER_NOT_SELECTED, null, [$email]);
@@ -451,7 +484,7 @@ class Client extends Api implements ClientInterface
         }
 
         $clientHashes = array_column($client->client_hash, 'client_hash');
-        if (!in_array($fingerPrint, $clientHashes)) {
+        if ($fingerPrint && !in_array($fingerPrint, $clientHashes)) {
             $resultMergeHash = $this->clientMergeHash($client->id, $fingerPrint);
             if ($resultMergeHash['status_code'] == Connection::STATUS_CODE_SUCCESS) {
                 $client = $this->getById($client->id);

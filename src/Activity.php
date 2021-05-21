@@ -10,14 +10,17 @@ class Activity extends Api implements ActivityInterface
 {
     const ACTION_LIST = 'activity/list';
     const ACTION_FIRE_EVENT = 'activity/fire-event';
+
     /**
      * @var integer
      */
     public $client_id;
+
     /**
      * @var string
      */
     public $client_hash;
+
     /**
      * @var ClientInterface
      */
@@ -37,9 +40,9 @@ class Activity extends Api implements ActivityInterface
     }
 
     /**
-     * @return Activity
+     * @inheritdoc
      */
-    public function getEventTypes() : Activity
+    public function getEventTypes(): Activity
     {
         $result = $this->_connection->sendGetRequest(self::ACTION_LIST, []);
         $this->fill($result);
@@ -47,17 +50,14 @@ class Activity extends Api implements ActivityInterface
     }
 
     /**
-     * @param string $activity_key
-     * @param string $activity_datetime
-     * @param array $activity_attributes
-     * @return Activity
+     * @inheritdoc
      */
     public function fireEvent(
         string $activityKey,
         string $activityDatetime,
         string $externalId = '',
         array $activityAttributes = []
-    ) : Activity
+    ): Activity
     {
         $data = [
             'client_id' => $this->client_id,
@@ -73,9 +73,9 @@ class Activity extends Api implements ActivityInterface
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    protected function getClassNameException() : string
+    protected function getClassNameException(): string
     {
         return ActivityException::class;
     }
