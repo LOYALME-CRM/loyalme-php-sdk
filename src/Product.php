@@ -4,6 +4,7 @@ namespace LoyalmeCRM\LoyalmePhpSdk;
 
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductException;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductSearchException;
+use LoyalmeCRM\LoyalmePhpSdk\Interfaces\CategoryInterface;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ProductInterface;
 use const src\API_URL;
 
@@ -23,19 +24,13 @@ class Product extends Api implements ProductInterface
     const PRODUCT_TYPE_GIFT = 3;
 
     /**
-     * @var array
-     */
-    protected $_categories;
-
-    /**
      * Product constructor.
      * @param Connection $connection
      * @param array $categories
      */
-    public function __construct(Connection $connection, array $categories)
+    public function __construct(Connection $connection)
     {
         parent::__construct($connection);
-        $this->_categories = $categories;
     }
 
     /**
@@ -62,14 +57,15 @@ class Product extends Api implements ProductInterface
         int $isActive = 1,
         int $typeId = 1,
         float $accrualRate = 1,
-        array $categories = null,
-        array $aliases = null,
-        array $customFields = null
+        array $categories = [],
+        array $aliases = [],
+        array $customFields = []
     ): ProductInterface
     {
+        $categoriesArray = $this->processCategoriesArray($categories);
         try {
             $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
-            $result = $this->update($id, $title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
+            $result = $this->update($id, $title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categoriesArray, $aliases, $customFields);
             return $result;
         } catch (ProductSearchException $e) {
             if (empty($categories)){
@@ -143,7 +139,18 @@ class Product extends Api implements ProductInterface
     ): ProductInterface
     {
         $url = sprintf(self::UPDATE_PRODUCT, $id);
-        $data = $this->fillParams($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
+        $data = $this->fillParams(
+            $title,
+            $price,
+            $photo,
+            $extItemId,
+            $barcode,
+            $isActive,
+            $typeId,
+            $accrualRate,
+            $categories,
+            $aliases,
+            $customFields);
         $result = $this->_connection->sendPutRequest($url, $data);
         return $this->fill($result);
     }
@@ -243,6 +250,26 @@ class Product extends Api implements ProductInterface
         $url = sprintf(self::DELETE_PRODUCT, $id);
         $result = $this->_connection->sendDeleteRequest($url);
         return $this->fill($result);
+    }
+
+    /**
+     * @param array $array
+     * @return array
+     * @throws ProductException
+     */
+    private function processCategoriesArray(array $array = []): array
+    {
+        if (empty($array)) throw new ProductException('The category parameter is required and must be filled',422);
+
+        return array_map(function ($value){
+            if (!$value instanceof CategoryInterface){
+                throw new ProductException('Category data must be an array of objects of the Category class', 422);
+            }
+            if(!isset($value->attributes['id'])){
+                throw new ProductException('Before transferring data, you need to get or create the required category using the get () method', 422);
+            }
+            return $value->id;
+        },$array);
     }
 
     /**

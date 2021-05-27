@@ -54,6 +54,7 @@ class Category extends Api implements CategoryInterface
     {
         $url = self::LIST_OF_CATEGORIES;
         $result = $this->_connection->sendGetRequest($url);
+        $this->checkResponseForErrors($result);
         $search = array_values(array_filter($result['data'], function ($innerArray) use ($extCategoryId) {
             return $innerArray['external_id'] == $extCategoryId;
         }));
