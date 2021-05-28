@@ -68,12 +68,32 @@ class Product extends Api implements ProductInterface
             $result = $this->update($id, $title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categoriesArray, $aliases, $customFields);
             return $result;
         } catch (ProductSearchException $e) {
-            if (empty($categories)){
-                throw new ProductException('Categories can not be empty',422,['categories'=>'must be filled']);
+            if (empty($categories)) {
+                throw new ProductException('Categories can not be empty', 422, ['categories' => 'must be filled']);
             }
             $result = $this->create($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
             return $result;
         }
+    }
+
+    /**
+     * @param array $array
+     * @return array
+     * @throws ProductException
+     */
+    private function processCategoriesArray(array $array = []): array
+    {
+        if (empty($array)) throw new ProductException('The category parameter is required and must be filled', 422);
+
+        return array_map(function ($value) {
+            if (!$value instanceof CategoryInterface) {
+                throw new ProductException('Category data must be an array of objects of the Category class', 422);
+            }
+            if (!isset($value->attributes['id'])) {
+                throw new ProductException('Before transferring data, you need to get or create the required category using the get () method', 422);
+            }
+            return $value->id;
+        }, $array);
     }
 
     /**
@@ -199,7 +219,7 @@ class Product extends Api implements ProductInterface
         foreach ($customFields as $key => $value) {
             $parametersArray[$key] = $value;
         }
-        Log::printData($parametersArray,'Массив параметров');
+        Log::printData($parametersArray, 'Массив параметров');
         return $parametersArray;
     }
 
@@ -250,26 +270,6 @@ class Product extends Api implements ProductInterface
         $url = sprintf(self::DELETE_PRODUCT, $id);
         $result = $this->_connection->sendDeleteRequest($url);
         return $this->fill($result);
-    }
-
-    /**
-     * @param array $array
-     * @return array
-     * @throws ProductException
-     */
-    private function processCategoriesArray(array $array = []): array
-    {
-        if (empty($array)) throw new ProductException('The category parameter is required and must be filled',422);
-
-        return array_map(function ($value){
-            if (!$value instanceof CategoryInterface){
-                throw new ProductException('Category data must be an array of objects of the Category class', 422);
-            }
-            if(!isset($value->attributes['id'])){
-                throw new ProductException('Before transferring data, you need to get or create the required category using the get () method', 422);
-            }
-            return $value->id;
-        },$array);
     }
 
     /**
