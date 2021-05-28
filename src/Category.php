@@ -15,40 +15,69 @@ class Category extends Api implements CategoryInterface
     const DELETE_CATEGORY = "category/%d";
 
     /**
-     * @var CategoryInterface|null
+     * @var CategoryInterface
      */
-    protected $parentCategoryExtId;
+    protected $parentCategory;
 
     /**
      * Category constructor.
      * @param Connection $connection
-     * @param int|null $parentCategoryExtId
+     * @param CategoryInterface|null $parentCategory
      * @throws CategoryException
      */
-    public function __construct(Connection $connection, int $parentCategoryExtId = null)
+    public function __construct(Connection $connection, ?CategoryInterface $parentCategory = null)
     {
         parent::__construct($connection);
-        $this->setParentCategory($parentCategoryExtId);
+        $this->setParentCategory($parentCategory);
     }
 
     /**
-     * @param null $parentCategoryExtId
+     * @param CategoryInterface|null $parentCategory
      * @return CategoryInterface
-     * @throws CategoryException
      */
-    public function setParentCategory($parentCategoryExtId = null): CategoryInterface
+    public function setParentCategory(CategoryInterface $parentCategory = null): CategoryInterface
     {
-        if (isset($parentCategoryExtId)) {
-            $this->findByExtItemId($parentCategoryExtId);
-        }
-        $this->parentCategoryExtId = $parentCategoryExtId;
+        $this->parentCategory = isset($parentCategory) ? $parentCategory : null;
         return $this;
+    }
+
+    /**
+     * @param string $extCategoryId
+     * @param string $name
+     * @return CategoryInterface
+     */
+    public function get(string $extCategoryId, string $name, ?CategoryInterface $parentCategory = null): CategoryInterface
+    {
+        $this->setParentCategory($parentCategory);
+        try {
+            $this->update($extCategoryId, $name, $parentCategory);
+        } catch (CategorySearchException $e) {
+            $this->create($extCategoryId, $name, $parentCategory);
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $extCategoryId
+     * @param string $name
+     * @return CategoryInterface
+     * @throws CategorySearchException
+     */
+    protected function update(string $extCategoryId, string $name, ?CategoryInterface $parentCategory = null): CategoryInterface
+    {
+        $id = $this->findByExtItemId($extCategoryId);
+        $url = sprintf(self::UPDATE_CATEGORY, $id);
+
+        $data = $this->fillParams($extCategoryId, $name, $parentCategory);
+        $result = $this->_connection->sendPutRequest($url, $data);
+        return $this->fill($result);
     }
 
     /**
      * @param string $extCategoryId
      * @return int
      * @throws CategorySearchException
+     * @throws Exceptions\LoyalmePhpSdkException
      */
     protected function findByExtItemId(string $extCategoryId): int
     {
@@ -69,59 +98,47 @@ class Category extends Api implements CategoryInterface
     /**
      * @param string $extCategoryId
      * @param string $name
-     * @return CategoryInterface
-     */
-    public function get(string $extCategoryId, string $name): CategoryInterface
-    {
-        try {
-            $this->update($extCategoryId, $name);
-        } catch (CategorySearchException $e) {
-            $this->create($extCategoryId, $name, $this->parentCategoryExtId);
-        }
-        return $this;
-    }
-
-    /**
-     * @param string $extCategoryId
-     * @param string $name
-     * @return CategoryInterface
-     * @throws CategorySearchException
-     */
-    protected function update(string $extCategoryId, string $name): CategoryInterface
-    {
-        $id = $this->findByExtItemId($extCategoryId);
-        $url = sprintf(self::UPDATE_CATEGORY, $id);
-        $data = $this->fillParams($extCategoryId, $name, $this->parentCategoryExtId);
-        $result = $this->_connection->sendPutRequest($url, $data);
-        return $this->fill($result);
-    }
-
-    /**
-     * @param string $extCategoryId
-     * @param string $name
-     * @param int|null $parentExtCategoryId
+     * @param int $parentCategoryId
      * @return array
      */
-    protected function fillParams(string $extCategoryId, string $name, int $parentExtCategoryId = null): array
+    protected function fillParams(string $extCategoryId, string $name, ?CategoryInterface $parentCategory = null): array
     {
-        $parent_id = $parentExtCategoryId ?: $this->parentCategoryExtId;
+        $parentCategoryId = $this->getParentCategoryId($parentCategory);
         return [
             'name' => $name,
-            'parent_id' => $parent_id,
+            'parent_id' => $parentCategoryId,
             'external_id' => $extCategoryId,
         ];
     }
 
     /**
+     * The method not only returns the ID of the parent category, but also updates the value of the parent category in the class properties
+     *
+     * @param CategoryInterface|null $parentCategory
+     * @return int|null
+     */
+    protected function getParentCategoryId(?CategoryInterface $parentCategory = null): ?int
+    {
+        if (isset($parentCategory)) {
+            $this->setParentCategory($parentCategory);
+            return $parentCategory->id;
+        } else if (isset($this->parentCategory)) {
+            return $this->parentCategory->id;
+        }
+        $id = isset($this->parentCategory) ? $this->parentCategory->id : null;
+        return $id;
+    }
+
+    /**
      * @param string $extCategoryId
      * @param string $name
-     * @param int|null $parentExtCategoryId
+     * @param CategoryInterface|null $parentCategory
      * @return CategoryInterface
      */
-    private function create(string $extCategoryId, string $name, int $parentExtCategoryId = null): CategoryInterface
+    private function create(string $extCategoryId, string $name, ?CategoryInterface $parentCategory = null): CategoryInterface
     {
         $url = self::CREATE_CATEGORY;
-        $data = $this->fillParams($extCategoryId, $name, $parentExtCategoryId);
+        $data = $this->fillParams($extCategoryId, $name, $parentCategory);
         $result = $this->_connection->sendPostRequest($url, $data);
         $this->fill($result);
         return $this;
@@ -131,6 +148,7 @@ class Category extends Api implements CategoryInterface
      * @param string $extCategoryId
      * @return Category
      * @throws CategorySearchException
+     * @throws Exceptions\LoyalmePhpSdkException
      */
     public function delete(string $extCategoryId)
     {
