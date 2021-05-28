@@ -37,9 +37,9 @@ abstract class Api
         $result = null;
         if (isset($this->$property)) {
             $result = $this->$property;
-        } elseif (isset($this->attributes->$property)) {
+        } else if (isset($this->attributes->$property)) {
             $result = $this->attributes->$property;
-        } elseif (isset($this->attributes[$property])) {
+        } else if (isset($this->attributes[$property])) {
             $result = $this->attributes[$property];
         }
         return $result;
@@ -92,31 +92,6 @@ abstract class Api
         }
     }
 
-   /**
-     * @param array $result
-     * @return $this
-     */
-    protected function fill(array $result)
-    {
-        $this->attributes = [];
-        $classNameException = $this->getClassNameException();
-        if (isset($result['data'])) {
-            foreach ($result['data'] as $field => $value) {
-                $this->attributes[$field] = $value;
-            }
-        }elseif ($result['status_code']==200){
-            $this->attributes['result']=$result;
-        }elseif (isset($result['errors']) && $result['errors']) {
-            throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
-        } else {
-            $details = is_array($result) ? json_encode($result) : (string) $result;
-            $errorMessage = sprintf('Another exception from API. Details: %s',$details);
-            throw new $classNameException($errorMessage, $result['status_code']);
-        }
-
-        return $this;
-    }
-
     /**
      * @param array $response
      * @return bool
@@ -136,6 +111,31 @@ abstract class Api
         $statusCode = isset($response['status_code']);
         $errors = isset($response['errors']) ? $response['errors'] : [];
         throw new $classException($message, $statusCode, $errors);
+    }
+
+    /**
+     * @param array $result
+     * @return $this
+     */
+    protected function fill(array $result)
+    {
+        $this->attributes = [];
+        $classNameException = $this->getClassNameException();
+        if (isset($result['data'])) {
+            foreach ($result['data'] as $field => $value) {
+                $this->attributes[$field] = $value;
+            }
+        } else if ($result['status_code'] == 200) {
+            $this->attributes['result'] = $result;
+        } else if (isset($result['errors']) && $result['errors']) {
+            throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
+        } else {
+            $details = is_array($result) ? json_encode($result) : (string)$result;
+            $errorMessage = sprintf('Another exception from API. Details: %s', $details);
+            throw new $classNameException($errorMessage, $result['status_code']);
+        }
+
+        return $this;
     }
 
     /**
