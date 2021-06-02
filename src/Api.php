@@ -114,11 +114,6 @@ abstract class Api
     }
 
     /**
-     * @return string
-     */
-    abstract protected function getClassNameException(): string;
-
-    /**
      * @param array $result
      * @return $this
      */
@@ -142,4 +137,9 @@ abstract class Api
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    abstract protected function getClassNameException(): string;
 }
