@@ -37,9 +37,9 @@ abstract class Api
         $result = null;
         if (isset($this->$property)) {
             $result = $this->$property;
-        } else if (isset($this->attributes->$property)) {
+        } elseif (isset($this->attributes->$property)) {
             $result = $this->attributes->$property;
-        } else if (isset($this->attributes[$property])) {
+        } elseif (isset($this->attributes[$property])) {
             $result = $this->attributes[$property];
         }
         return $result;
@@ -114,6 +114,11 @@ abstract class Api
     }
 
     /**
+     * @return string
+     */
+    abstract protected function getClassNameException(): string;
+
+    /**
      * @param array $result
      * @return $this
      */
@@ -125,9 +130,9 @@ abstract class Api
             foreach ($result['data'] as $field => $value) {
                 $this->attributes[$field] = $value;
             }
-        } else if ($result['status_code'] == 200) {
+        } elseif ($result['status_code'] == 200) {
             $this->attributes['result'] = $result;
-        } else if (isset($result['errors']) && $result['errors']) {
+        } elseif (isset($result['errors']) && $result['errors']) {
             throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
         } else {
             $details = is_array($result) ? json_encode($result) : (string)$result;
@@ -137,9 +142,4 @@ abstract class Api
 
         return $this;
     }
-
-    /**
-     * @return string
-     */
-    abstract protected function getClassNameException(): string;
 }
