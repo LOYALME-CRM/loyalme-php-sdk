@@ -17,8 +17,13 @@ ___
 #### Get category
 
 ###### code:
-  
-    $category = $categoryObject->get(string $extId, string $nameOfCategory, ?Category $parentCategory);
+    try {
+        $category = $categoryObject->get(string $extId, string $nameOfCategory, $parentCategory);
+     } catch (CategoryException $e) {
+            print_r($e->getErrorData);
+            print_r($e->getCode);
+            print_r($e->getErrorMessage);
+     }
       
 ###### result:
     {

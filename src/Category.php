@@ -25,7 +25,7 @@ class Category extends Api implements CategoryInterface
      * @param CategoryInterface|null $parentCategory
      * @throws CategoryException
      */
-    public function __construct(Connection $connection, ?CategoryInterface $parentCategory = null)
+    public function __construct(Connection $connection, CategoryInterface $parentCategory = null)
     {
         parent::__construct($connection);
         $this->setParentCategory($parentCategory);
@@ -46,7 +46,7 @@ class Category extends Api implements CategoryInterface
      * @param string $name
      * @return CategoryInterface
      */
-    public function get(string $extCategoryId, string $name, ?CategoryInterface $parentCategory = null): CategoryInterface
+    public function get(string $extCategoryId, string $name, CategoryInterface $parentCategory = null): CategoryInterface
     {
         $this->setParentCategory($parentCategory);
         try {
@@ -63,7 +63,7 @@ class Category extends Api implements CategoryInterface
      * @return CategoryInterface
      * @throws CategorySearchException
      */
-    protected function update(string $extCategoryId, string $name, ?CategoryInterface $parentCategory = null): CategoryInterface
+    protected function update(string $extCategoryId, string $name, CategoryInterface $parentCategory = null): CategoryInterface
     {
         $id = $this->findByExtItemId($extCategoryId);
         $url = sprintf(self::UPDATE_CATEGORY, $id);
@@ -105,8 +105,8 @@ class Category extends Api implements CategoryInterface
     {
         $parentCategoryId = $this->getParentCategoryId($parentCategory);
         return [
-            'name' => $name,
-            'parent_id' => $parentCategoryId,
+            'name'        => $name,
+            'parent_id'   => $parentCategoryId,
             'external_id' => $extCategoryId,
         ];
     }
@@ -117,12 +117,12 @@ class Category extends Api implements CategoryInterface
      * @param CategoryInterface|null $parentCategory
      * @return int|null
      */
-    protected function getParentCategoryId(?CategoryInterface $parentCategory = null): ?int
+    protected function getParentCategoryId(CategoryInterface $parentCategory = null): ?int
     {
         if (isset($parentCategory)) {
             $this->setParentCategory($parentCategory);
             return $parentCategory->id;
-        } else if (isset($this->parentCategory)) {
+        } elseif (isset($this->parentCategory)) {
             return $this->parentCategory->id;
         }
         $id = isset($this->parentCategory) ? $this->parentCategory->id : null;
@@ -135,7 +135,7 @@ class Category extends Api implements CategoryInterface
      * @param CategoryInterface|null $parentCategory
      * @return CategoryInterface
      */
-    private function create(string $extCategoryId, string $name, ?CategoryInterface $parentCategory = null): CategoryInterface
+    private function create(string $extCategoryId, string $name, CategoryInterface $parentCategory = null): CategoryInterface
     {
         $url = self::CREATE_CATEGORY;
         $data = $this->fillParams($extCategoryId, $name, $parentCategory);
