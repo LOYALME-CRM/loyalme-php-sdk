@@ -105,8 +105,8 @@ class Category extends Api implements CategoryInterface
     {
         $parentCategoryId = $this->getParentCategoryId($parentCategory);
         return [
-            'name'        => $name,
-            'parent_id'   => $parentCategoryId,
+            'name' => $name,
+            'parent_id' => $parentCategoryId,
             'external_id' => $extCategoryId,
         ];
     }
