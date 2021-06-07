@@ -130,7 +130,7 @@ abstract class Api
         } elseif (isset($result['errors']) && $result['errors']) {
             throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
         } else {
-            $details = is_array($result) ? json_encode($result) : (string)$result;
+            $details = is_array($result) ? json_encode($result) : (string) $result;
             $errorMessage = sprintf('Another exception from API. Details: %s', $details);
             throw new $classNameException($errorMessage, $result['status_code']);
         }
