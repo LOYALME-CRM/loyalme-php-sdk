@@ -244,11 +244,18 @@ class Client extends Api implements ClientInterface
     /**
      * @param string $externalId
      */
-    protected function findByExternalId(string $externalId)
+    protected function findByExternalId(string $externalId, bool $fillIn = false)
     {
-        return $this->_connection->sendGetRequest(self::ACTION_CLIENT, [
+        $result =  $this->_connection->sendGetRequest(self::ACTION_CLIENT, [
             'external_id' => $externalId,
         ]);
+
+        if ($fillIn && isset($result['data'][0])) {
+            $this->fill(['data' => $result['data'][0]]);
+            return $this;
+        }
+
+        return $result;
     }
 
     /**
@@ -286,7 +293,7 @@ class Client extends Api implements ClientInterface
     /**
      * @param int $clientId
      */
-    protected function getById(int $clientId)
+    public function getById(int $clientId)
     {
         $result = $this->_connection->sendGetRequest(sprintf(self::ACTION_SHOW, $clientId), []);
         $this->fill($result);
@@ -365,7 +372,7 @@ class Client extends Api implements ClientInterface
                 $foundByExternalId = true;
             }
         }
-        if (is_null($result) && $fingerPrint) {
+        if ((empty($externalId)) && is_null($result) && $fingerPrint) {
             $result = $this->findByFingerprint($fingerPrint);
             if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
                 $result = null;
@@ -429,7 +436,14 @@ class Client extends Api implements ClientInterface
             if (!in_array($fingerPrint, $clientHashes)) {
                 $resultMergeHash = $this->clientMergeHash($client->id, $fingerPrint);
                 if ($resultMergeHash['status_code'] == Connection::STATUS_CODE_SUCCESS) {
-                    $client = $this->getById($client->id);
+                    $clientId = $client->id;
+                    $client = null;
+                    if ($externalId) {
+                        $client = $this->findByExternalId($externalId, true);
+                    }
+                    if (is_null($client)) {
+                        $client = $this->getById($clientId);
+                    }
                 } else {
                     throw new ClientException('Error in answer from API at client merge whith fingerprint', $resultMergeHash['status_code'] ?? 400, $resultMergeHash);
                 }
