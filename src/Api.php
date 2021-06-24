@@ -92,6 +92,27 @@ abstract class Api
         }
     }
 
+    /**
+     * @param array $response
+     * @return bool
+     * @throws LoyalmePhpSdkException
+     */
+    public function checkResponseForErrors(array $response): bool
+    {
+        if (isset($response['data'])) {
+            return true;
+        }
+        $classException = $this->getClassNameException();
+        if (!isset($response['status_code'])) {
+            $result = sprintf('API call error: %s', print_r($response, true));
+            throw new $classException($result, 500);
+        }
+        $message = isset($response['message']) ? $response['message'] : 'API call error. No error message reported from API.';
+        $statusCode = isset($response['status_code']);
+        $errors = isset($response['errors']) ? $response['errors'] : [];
+        throw new $classException($message, $statusCode, $errors);
+    }
+
     public function fill(array $result)
     {
         $this->attributes = [];
