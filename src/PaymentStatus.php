@@ -2,7 +2,6 @@
 
 namespace LoyalmeCRM\LoyalmePhpSdk;
 
-use LoyalmeCRM\LoyalmePhpSdk\Connection;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\PaymentStatusException;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\PaymentStatusInterface;
 
@@ -50,12 +49,46 @@ class PaymentStatus extends Api implements PaymentStatusInterface
     {
         $this->findBySlug($slug);
         $this->fillParams($titleEn, $slug, $titleRu, $isActive);
-        if (empty($this->lastSearchResult['data'][0])){
+        if (empty($this->lastSearchResult['data'][0])) {
             $this->create();
-        }else{
+        } else {
             $this->update();
         }
         return $this;
+    }
+
+    /**
+     * @param string $slug
+     * @throws Exceptions\LoyalmePhpSdkException
+     */
+    protected function findBySlug(string $slug)
+    {
+        $url = self::LIST_OF_PAYMENT_STATUSES;
+        $this->lastSearchResult = $this->connection->sendGetRequest($url, ['slug' => $slug]);
+        $this->checkResponseForErrors($this->lastSearchResult);
+        if (empty($this->lastSearchResult['data'])) {
+            return false;
+        } else {
+            return $this->lastSearchResult['data'][0];
+        }
+    }
+
+    /**
+     * @param string $titleEn
+     * @param string $slug
+     * @param string $titleRu
+     * @param int $isActive
+     * @return array
+     */
+    protected function fillParams(string $titleEn, string $slug, string $titleRu = '', int $isActive = self::STATUS_ACTIVE): array
+    {
+        $this->paramsArray = [
+            'title_en' => $titleEn,
+            'slug' => $slug,
+            'title_ru' => $titleRu,
+            'is_active' => $isActive,
+        ];
+        return $this->paramsArray;
     }
 
     /**
@@ -80,6 +113,13 @@ class PaymentStatus extends Api implements PaymentStatusInterface
         return $this;
     }
 
+    protected function getOnlyFilledParams()
+    {
+        return array_filter($this->paramsArray, function ($item) {
+            return !empty($item);
+        });
+    }
+
     /**
      * @param string $slug
      * @return PaymentStatus
@@ -89,10 +129,10 @@ class PaymentStatus extends Api implements PaymentStatusInterface
     public function delete(string $slug): PaymentStatus
     {
         $this->findBySlug($slug);
-        if (empty($this->lastSearchResult['data'][0])){
+        if (empty($this->lastSearchResult['data'][0])) {
             throw new PaymentStatusException('Entity not found', 404);
         }
-        $url =sprintf(self::DELETE_PAYMENT_STATUS, $this->lastSearchResult['data'][0]['id']);
+        $url = sprintf(self::DELETE_PAYMENT_STATUS, $this->lastSearchResult['data'][0]['id']);
         $result = $this->_connection->sendDeleteRequest($url);
         $this->fill($result);
         Log::printData($result, "Удаление");
@@ -100,46 +140,6 @@ class PaymentStatus extends Api implements PaymentStatusInterface
         return $this;
     }
 
-    /**
-     * @param string $slug
-     * @throws Exceptions\LoyalmePhpSdkException
-     */
-    protected function findBySlug(string $slug)
-    {
-        $url = self::LIST_OF_PAYMENT_STATUSES;
-        $this->lastSearchResult = $this->connection->sendGetRequest($url, ['slug' => $slug]);
-        $this->checkResponseForErrors($this->lastSearchResult);
-        if (empty($this->lastSearchResult['data'])){
-            return false;
-        }else{
-            return $this->lastSearchResult['data'][0];
-        }
-    }
-
-    /**
-     * @param string $titleEn
-     * @param string $slug
-     * @param string $titleRu
-     * @param int $isActive
-     * @return array
-     */
-    protected function fillParams(string $titleEn, string $slug, string $titleRu = '', int $isActive = self::STATUS_ACTIVE): array
-    {
-        $this->paramsArray = [
-            'title_en' => $titleEn,
-            'slug' => $slug,
-            'title_ru' => $titleRu,
-            'is_active' => $isActive,
-        ];
-        return $this->paramsArray;
-    }
-
-    protected function getOnlyFilledParams()
-    {
-        return array_filter($this->paramsArray,function ($item){
-            return !empty($item);
-        });
-    }
     /**
      * @return string
      */
