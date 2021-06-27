@@ -92,18 +92,47 @@ abstract class Api
         }
     }
 
-    public function fill(array $result)
+    /**
+     * @param array $response
+     * @return bool
+     * @throws LoyalmePhpSdkException
+     */
+    public function checkResponseForErrors(array $response): bool
+    {
+        if (isset($response['data'])) {
+            return true;
+        }
+        $classException = $this->getClassNameException();
+        if (!isset($response['status_code'])) {
+            $result = sprintf('API call error: %s', print_r($response, true));
+            throw new $classException($result, 500);
+        }
+        $message = isset($response['message']) ? $response['message'] : 'API call error. No error message reported from API.';
+        $statusCode = isset($response['status_code']);
+        $errors = isset($response['errors']) ? $response['errors'] : [];
+        throw new $classException($message, $statusCode, $errors);
+    }
+
+    /**
+     * @param array $result
+     * @return $this
+     */
+    protected function fill(array $result)
     {
         $this->attributes = [];
         $classNameException = $this->getClassNameException();
         if (isset($result['data'])) {
             foreach ($result['data'] as $field => $value) {
-                $this->$field = $value;
+                $this->attributes[$field] = $value;
             }
+        } elseif ($result['status_code'] == 200) {
+            $this->attributes['result'] = $result;
         } elseif (isset($result['errors']) && $result['errors']) {
             throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
         } else {
-            throw new $classNameException('Unknown exception from in API', $result['status_code']);
+            $details = is_array($result) ? json_encode($result) : (string) $result;
+            $errorMessage = sprintf('Another exception from API. Details: %s', $details);
+            throw new $classNameException($errorMessage, $result['status_code']);
         }
 
         return $this;
