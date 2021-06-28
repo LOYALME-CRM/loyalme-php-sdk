@@ -220,7 +220,7 @@ class ClientTest extends Unit
 
         $externalId2 = md5(date('sYmdhm') . rand(1000, 9999));
         $phone2 = rand(50000000001, 60000000000);
-        $email2 = rand(5000001, 9999999) . '@mail.com';
+        $email2 = rand(5000001, 9999999) . '@mail.ru';
 
         $clientRest4 = new Client($this->_connection);
         $client4 = $clientRest4->get(
