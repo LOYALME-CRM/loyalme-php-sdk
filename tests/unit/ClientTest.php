@@ -324,6 +324,8 @@ class ClientTest extends Unit
         $this->assertEquals($client7->external_id, $client8->external_id);
         $this->assertEquals('Mike', $client8->name);
 
+        sleep(1);
+
         $clientRest9 = new Client($this->_connection);
         $client9 = $clientRest9->get(
             $externalId2,
