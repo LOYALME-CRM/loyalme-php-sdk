@@ -105,7 +105,7 @@ class PaymentStatus extends Api implements PaymentStatusInterface
     /**
      * @return PaymentStatus
      */
-    protected function update(): PaymentStatus
+    protected function update(): PaymentStatusInterface
     {
         $url = sprintf(self::UPDATE_PAYMENT_STATUS, $this->lastSearchResult['data'][0]['id']);
         $result = $this->_connection->sendPutRequest($url, $this->getOnlyFilledParams());
@@ -126,7 +126,7 @@ class PaymentStatus extends Api implements PaymentStatusInterface
      * @throws Exceptions\LoyalmePhpSdkException
      * @throws PaymentStatusException
      */
-    public function delete(string $slug): PaymentStatus
+    public function delete(string $slug): PaymentStatusInterface
     {
         $this->findBySlug($slug);
         if (empty($this->lastSearchResult['data'][0])) {
@@ -135,8 +135,6 @@ class PaymentStatus extends Api implements PaymentStatusInterface
         $url = sprintf(self::DELETE_PAYMENT_STATUS, $this->lastSearchResult['data'][0]['id']);
         $result = $this->_connection->sendDeleteRequest($url);
         $this->fill($result);
-        Log::printData($result, "Удаление");
-        Log::printData($this, "Объект this");
         return $this;
     }
 
