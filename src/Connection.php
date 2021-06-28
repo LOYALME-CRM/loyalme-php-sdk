@@ -119,7 +119,7 @@ class Connection implements ConnectionInterface
     {
         $this->_setPath($action);
 
-        return $this->_sendRequest(self::METHOD_PUT, $params);
+        return $this->_sendRequest(self::METHOD_DELETE, $params);
     }
 
     /**

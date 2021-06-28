@@ -123,6 +123,8 @@ abstract class Api
             }
         } elseif (isset($result['errors']) && $result['errors']) {
             throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
+        } elseif ($result['status_code'] == 200) {
+            return $this; //for deleting requests - it need in some methods of API
         } else {
             throw new $classNameException('Unknown exception from in API', $result['status_code']);
         }
