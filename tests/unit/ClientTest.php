@@ -220,7 +220,7 @@ class ClientTest extends Unit
 
         $externalId2 = md5(date('sYmdhm') . rand(1000, 9999));
         $phone2 = rand(50000000001, 60000000000);
-        $email2 = rand(5000001, 9999999) . '@mail.ru';
+        $email2 = rand(5000001, 9999999) . '@gmail.com';
 
         $clientRest4 = new Client($this->_connection);
         $client4 = $clientRest4->get(
@@ -324,6 +324,8 @@ class ClientTest extends Unit
         $this->assertEquals($client7->external_id, $client8->external_id);
         $this->assertEquals('Mike', $client8->name);
 
+        sleep(1);
+
         $clientRest9 = new Client($this->_connection);
         $client9 = $clientRest9->get(
             $externalId2,
@@ -333,7 +335,7 @@ class ClientTest extends Unit
         $this->assertTrue($client9 instanceof Client);
         $this->assertEquals($client4->id, $client9->id);
 
-        $clientRest10 = new Client($this->_connection);
+        $clientRest10 = new Client($this->_connection, true);
         $client10 = $clientRest10->get(
             null,
             $hash,
