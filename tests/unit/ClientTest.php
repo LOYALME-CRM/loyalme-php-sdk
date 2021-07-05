@@ -32,7 +32,7 @@ class ClientTest extends Unit
         
     }
 
-    public function checkConnectionObject()
+    public function testConnectionObject()
     {
         $this->assertTrue($this->_connection instanceof Connection);
     }

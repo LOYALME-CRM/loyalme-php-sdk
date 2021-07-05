@@ -12,18 +12,18 @@ A new object is created if it is impossible to find the object using the data sp
 ___
 ### How to create the object  
 
-`$categoryObject = new Category($connection, Category $parentCategory)`
+`$categoryObject = new Category(Connection $connection)`
 
 #### Get category
 
 ###### code:
     try {
         $category = $categoryObject->get(string $extId, string $nameOfCategory, $parentCategory);
-     } catch (CategoryException $e) {
-            print_r($e->getErrorData);
-            print_r($e->getCode);
-            print_r($e->getErrorMessage);
-     }
+    } catch (CategoryException $e) {
+        print_r($e->getErrorData);
+        print_r($e->getCode);
+        print_r($e->getErrorMessage);
+    }
       
 ###### result:
     {
@@ -35,21 +35,3 @@ ___
             "external_id": "string"  
         }  
     }
-    
-##Product
-
-### How to create the object  
-
-`$productObject = New Product($connection);`
-
-#### Get product
-
-###### code
-
-`$product = $productObject(title, price, photoUrl, extItemId, barcode, isActive, typeId, accrualRate, categories, aliases, customFields)`
-
-`$productAttributes = $productObject->attributes; //array`
-
-**Also you can refer to any property of the object directly:**
-
-`$productAttributes = $productObject->id`
