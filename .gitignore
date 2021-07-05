@@ -1,1 +1,10 @@
 nbproject
+
+/tests/acceptance.suite.yml
+/tests/functional.suite.yml
+/tests/unit.suite.yml
+
+# Vendor
+/vendor
+/node_modules
+/bower

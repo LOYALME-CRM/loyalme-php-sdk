@@ -11,6 +11,8 @@ class Client extends Api implements ClientInterface
     const CLIENT_GENDER_NOT_SELECTED = 0;
     const CLIENT_GENDER_MALE = 1;
     const CLIENT_GENDER_FEMALE = 2;
+    const CLIENT_NAME_SUBSCRIBER = 'subscriber';
+    const CLIENT_NAME_UNKNOWN = 'unknown';
 
     const ACTION_CLIENT = 'client';
     const ACTION_CREATE = 'client';
@@ -32,9 +34,9 @@ class Client extends Api implements ClientInterface
      * @param string $lastName
      * @param string $middleName
      * @param array $birthdate
-     * @param int $gender
-     * @param array $phones
-     * @param array $emails
+     * @param null|int $gender
+     * @param null|array $phones
+     * @param null|array $emails
      * @param string $address
      * @param string $passportSeria
      * @param string $passportNumber
@@ -50,9 +52,9 @@ class Client extends Api implements ClientInterface
         string $lastName = null,
         string $middleName = null,
         array $birthdate = null,
-        int $gender = 0,
-        array $phones = null,
-        array $emails = null,
+        ?int $gender = 0,
+        ?array $phones = null,
+        ?array $emails = null,
         string $address = null,
         string $passportSeria = null,
         string $passportNumber = null,
@@ -67,9 +69,11 @@ class Client extends Api implements ClientInterface
             'brand_id' => $this->_connection->brandId,
             'person_id' => $this->_connection->personId,
             'name' => $name,
-            'gender' => $gender
         ];
 
+        if (!is_null($gender)) {
+            $params['gender'] = $gender;
+        }
         if (!is_null($externalId)) {
             $params['external_id'] = $externalId;
         }
@@ -141,9 +145,9 @@ class Client extends Api implements ClientInterface
      * @param string $lastName
      * @param string $middleName
      * @param string $birthdate - ["day"="", "month"="", "year"=""]
-     * @param string $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
-     * @param array $phones - [["phone"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
-     * @param array $emails - [["email"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
+     * @param null|int $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
+     * @param null|array $phones - [["phone"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
+     * @param null|array $emails - [["email"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param array $address
      * @param array $passportSeria
      * @param array $passportNumber
@@ -157,9 +161,9 @@ class Client extends Api implements ClientInterface
         string $lastName = null,
         string $middleName = null,
         array $birthdate = null,
-        int $gender = 0,
-        array $phones = null,
-        array $emails = null,
+        ?int $gender = 0,
+        ?array $phones = null,
+        ?array $emails = null,
         string $address = null,
         string $passportSeria = null,
         string $passportNumber = null,
@@ -187,9 +191,9 @@ class Client extends Api implements ClientInterface
      * @param string $lastName
      * @param string $middleName
      * @param string $birthdate - ["day"="", "month"="", "year"=""]
-     * @param string $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
-     * @param array $phones - [["phone"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
-     * @param array $emails - [["email"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
+     * @param null|int $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
+     * @param null|array $phones - [["phone"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
+     * @param null|array $emails - [["email"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param array $address
      * @param array $passportSeria
      * @param array $passportNumber
@@ -204,9 +208,9 @@ class Client extends Api implements ClientInterface
         string $lastName = null,
         string $middleName = null,
         array $birthdate = null,
-        int $gender = 0,
-        array $phones = null,
-        array $emails = null,
+        ?int $gender = 0,
+        ?array $phones = null,
+        ?array $emails = null,
         string $address = null,
         string $passportSeria = null,
         string $passportNumber = null,
@@ -244,11 +248,18 @@ class Client extends Api implements ClientInterface
     /**
      * @param string $externalId
      */
-    protected function findByExternalId(string $externalId)
+    protected function findByExternalId(string $externalId, bool $fillIn = false)
     {
-        return $this->_connection->sendGetRequest(self::ACTION_CLIENT, [
+        $result =  $this->_connection->sendGetRequest(self::ACTION_CLIENT, [
             'external_id' => $externalId,
         ]);
+
+        if ($fillIn && isset($result['data'][0])) {
+            $this->fill(['data' => $result['data'][0]]);
+            return $this;
+        }
+
+        return $result;
     }
 
     /**
@@ -286,7 +297,7 @@ class Client extends Api implements ClientInterface
     /**
      * @param int $clientId
      */
-    protected function getById(int $clientId)
+    public function getById(int $clientId)
     {
         $result = $this->_connection->sendGetRequest(sprintf(self::ACTION_SHOW, $clientId), []);
         $this->fill($result);
@@ -301,9 +312,9 @@ class Client extends Api implements ClientInterface
      * @param string $lastName
      * @param string $middleName
      * @param string $birthdate - ["day"="", "month"="", "year"=""]
-     * @param string $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
-     * @param array $phones - [["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
-     * @param array $emails - [["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
+     * @param null|int $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
+     * @param null|array $phones - [["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
+     * @param null|array $emails - [["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param array $address
      * @param array $passportSeria
      * @param array $passportNumber
@@ -318,9 +329,9 @@ class Client extends Api implements ClientInterface
         string $lastName = null,
         string $middleName = null,
         array $birthdate = null,
-        int $gender = 0,
-        array $phones = null,
-        array $emails = null,
+        ?int $gender = 0,
+        ?array $phones = null,
+        ?array $emails = null,
         string $address = null,
         string $passportSeria = null,
         string $passportNumber = null,
@@ -365,7 +376,7 @@ class Client extends Api implements ClientInterface
                 $foundByExternalId = true;
             }
         }
-        if (is_null($result) && $fingerPrint) {
+        if ((empty($externalId)) && is_null($result) && $fingerPrint && $name != self::CLIENT_NAME_SUBSCRIBER) {
             $result = $this->findByFingerprint($fingerPrint);
             if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
                 $result = null;
@@ -400,7 +411,14 @@ class Client extends Api implements ClientInterface
             }
         }
         if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 1) {
-            throw new ClientException('Searching returned more than one result', 400, $result);
+            usort($result['data'], function($a, $b) {
+                return strtotime($b['updated_at']['date']) - strtotime($a['updated_at']['date']);
+            });
+            $result['data'] = [
+                $result['data'][0]
+            ];
+            $result['meta']['pagination']['total'] = 1;
+            $result['meta']['pagination']['count'] = 1;
         }
         $params = [
             $externalId, $name, $lastName, $middleName, $birthdate, $gender, $phones,
@@ -429,7 +447,14 @@ class Client extends Api implements ClientInterface
             if (!in_array($fingerPrint, $clientHashes)) {
                 $resultMergeHash = $this->clientMergeHash($client->id, $fingerPrint);
                 if ($resultMergeHash['status_code'] == Connection::STATUS_CODE_SUCCESS) {
-                    $client = $this->getById($client->id);
+                    $clientId = $client->id;
+                    $client = null;
+                    if ($externalId) {
+                        $client = $this->findByExternalId($externalId, true);
+                    }
+                    if (is_null($client)) {
+                        $client = $this->getById($clientId);
+                    }
                 } else {
                     throw new ClientException('Error in answer from API at client merge whith fingerprint', $resultMergeHash['status_code'] ?? 400, $resultMergeHash);
                 }
@@ -445,54 +470,6 @@ class Client extends Api implements ClientInterface
      */
     public function subscribeClientByEmail(string $fingerPrint, array $email): ClientInterface
     {
-        $this->validateArrayStructure(['contact', 'subscribe_status', 'validate_status'], $email, 'email');
-
-        $result = null;
-        if ($fingerPrint) {
-            $result = $this->findByFingerprint($fingerPrint);
-            if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-                $result = null;
-            }
-        }
-        if (is_null($result)) {
-            $result = $this->findByEmail($email['contact']);
-            if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-                $result = null;
-            }
-        }
-        if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 1) {
-            throw new ClientException('Searching returned more than one result', 400, $result);
-        }
-        if (is_null($result)) {
-            $client = $this->create(null, 'subscriber', null, null, null, self::CLIENT_GENDER_NOT_SELECTED, null, [$email]);
-        } else {
-            $emails = [$email];
-            if (isset($result['data'][0]['id'])) {
-                foreach ($result['data'][0]['emails'] as $existingEmail) {
-                    if ($existingEmail['email'] != $email['contact']) {
-                        $emails[] = [
-                            'contact' => $existingEmail['email'],
-                            'subscribe_status' => $existingEmail['subscription_status'] == 1 ? 1 : 0,
-                            'validate_status' => $existingEmail['status'],
-                        ];
-                    }
-                }
-                $client = $this->update($result['data'][0]['id'], $result['data'][0]['external_id'], $result['data'][0]['name'], null, null, null, $result['data'][0]['gender'], null, $emails);
-            } else {
-                throw new ClientException('Unknow error in response from API', 400, $result);
-            }
-        }
-
-        $clientHashes = array_column($client->client_hash, 'client_hash');
-        if ($fingerPrint && !in_array($fingerPrint, $clientHashes)) {
-            $resultMergeHash = $this->clientMergeHash($client->id, $fingerPrint);
-            if ($resultMergeHash['status_code'] == Connection::STATUS_CODE_SUCCESS) {
-                $client = $this->getById($client->id);
-            } else {
-                throw new ClientException('Error in answer from API at client merge whit fingerprint', $resultMergeHash['status_code'] ?? 400, $resultMergeHash);
-            }
-        }
-
-        return $this;
+        return $this->get(null, $fingerPrint, self::CLIENT_NAME_SUBSCRIBER, null, null, null, null, null, [$email]);
     }
 }
