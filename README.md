@@ -20,9 +20,7 @@ ___
     try {
         $category = $categoryObject->get(string $extId, string $nameOfCategory, $parentCategory);
     } catch (CategoryException $e) {
-        print_r($e->getErrorData);
-        print_r($e->getCode);
-        print_r($e->getErrorMessage);
+
     }
       
 ###### result:
@@ -35,3 +33,78 @@ ___
             "external_id": "string"  
         }  
     }
+    
+##Delivery Method
+
+### How to create the object  
+
+`$categoryObject = new DeliveryMethod(Connection $connection)`
+
+#### Get method
+###### code:
+    try {  
+        $deliveryMethod = New DeliveryMethod(makeConnection());
+        $deliveryMethod->get('English name', 'slug');
+    } catch (DeliveryMethodException $e) {
+        
+    }
+      
+### Delete method 
+  
+###### code:
+    try {  
+        $deliveryMethod = New DeliveryMethod(makeConnection());
+        $deliveryMethod->delete('slug');
+    } catch (DeliveryMethodException $e) {
+        
+    }
+ 
+ ##Order Status
+ 
+ ### How to create the object  
+ 
+ `$categoryObject = new OrderStatus(Connection $connection)`
+ 
+ #### Get method
+ ###### code:
+     try {  
+         $deliveryMethod = New OrderStatus(makeConnection());
+         $deliveryMethod->get('English name', 'slug');
+     } catch (OrderStatusException $e) {
+         
+     }
+       
+ ### Delete method 
+   
+ ###### code:
+     try {  
+         $deliveryMethod = New OrderStatus(makeConnection());
+         $deliveryMethod->delete('slug');
+     } catch (OrderStatusException $e) {
+         
+     }   
+ 
+ ##Payment Status
+ 
+ ### How to create the object  
+ 
+ `$categoryObject = new PaymentStatus(Connection $connection)`
+ 
+ #### Get method
+ ###### code:
+     try {  
+         $deliveryMethod = New PaymentStatus(makeConnection());
+         $deliveryMethod->get('English name', 'slug');
+     } catch (PaymentStatusException $e) {
+         
+     }
+       
+ ### Delete method 
+   
+ ###### code:
+     try {  
+         $deliveryMethod = New PaymentStatus(makeConnection());
+         $deliveryMethod->delete('slug');
+     } catch (PaymentStatusException $e) {
+         
+     }   
