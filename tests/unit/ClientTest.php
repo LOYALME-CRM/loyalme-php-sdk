@@ -37,7 +37,7 @@ class ClientTest extends Unit
         $this->assertTrue($this->_connection instanceof Connection);
     }
 
-    public function testCase1()
+    public function testOfRegistrationCase1()
     {
         $hash = md5(date('Ymdhms') . rand(10000, 99999));
         $externalId = md5(date('Ymdhms') . rand(1000, 9999));
@@ -139,7 +139,7 @@ class ClientTest extends Unit
         }
     }
 
-    public function testCase2()
+    public function testOfRegistrationCase2()
     {
         $hash = md5(date('Ymdhms') . rand(10000, 99999));
         $externalId1 = md5(date('Ymdhms') . rand(1000, 9999));
@@ -348,7 +348,7 @@ class ClientTest extends Unit
         $this->assertEquals('Mike2', $client10->name);
     }
 
-    public function testCase3()
+    public function testOfRegistrationCase3()
     {
         $hash1 = md5(date('Ymdhms') . rand(10000, 30000));
         $externalId1 = md5(date('Ymdhms') . rand(1000, 3000));
@@ -650,7 +650,7 @@ class ClientTest extends Unit
         }
     }
 
-    public function testCase4()
+    public function testOfRegistrationCase4()
     {
         $hash1 = md5(date('Ymdhms') . rand(10000, 99999));
         $externalId1 = md5(date('Ymdhms') . rand(1000, 9999));
@@ -741,7 +741,7 @@ class ClientTest extends Unit
         $this->assertEquals('Mikeln3', $client4->last_name);
     }
 
-    public function testCase5()
+    public function testOfRegistrationCase5()
     {
         $hash1 = md5(date('Ymdhms') . rand(10000, 99999));
         $externalId1 = md5(date('Ymdhms') . rand(1000, 9999));
@@ -896,7 +896,7 @@ class ClientTest extends Unit
         }
     }
 
-    public function testCase6()
+    public function testOfRegistrationCase6()
     {
         $hash1 = md5(date('Ymdhms') . rand(10000, 99999));
         $email1 = rand(1000000, 5000000) . '@mail.ru';
@@ -1011,5 +1011,242 @@ class ClientTest extends Unit
         $this->assertEquals(1, $clientsByFingerprint2['meta']['pagination']['total']);
 
         $this->assertEquals($clientsByFingerprint1['data'][0]['id'], $clientsByFingerprint2['data'][0]['id']);
+    }
+
+    public function testOfClientUnsubscribe()
+    {
+        $hash1 = md5(date('Ymdhms') . rand(10000, 30000));
+        $externalId1 = md5(date('Ymdhms') . rand(1000, 3000));
+        $phone1 = rand(10000000000, 30000000000);
+        $email1 = rand(1000000, 3000000) . '@mail.ru';
+
+        $clientRest1 = new Client($this->_connection);
+        $client1 = $clientRest1->get(
+            $externalId1,
+            $hash1,
+            'Mike',
+            'Mikeln',
+            'Mikemn',
+            [
+                'day' => '02',
+                'month' => '12',
+                'year' => '1985',
+            ],
+            0,
+            [
+                [
+                    'contact' => $phone1,
+                    'subscribe_status' => 1,
+                    'validate_status' => 1,
+                ]
+            ],
+            [
+                [
+                    'contact' => $email1,
+                    'subscribe_status' => 1,
+                    'validate_status' => 1,
+                ]
+            ],
+            'address string',
+            '4245',
+            '2222222',
+            [
+                'day' => '02',
+                'month' => '12',
+                'year' => '2001',
+            ],
+            'London',
+            [
+                'day' => '02',
+                'month' => '12',
+                'year' => '2001',
+                'hours' => '19',
+                'minutes' => '25',
+                'seconds' => '53',
+            ],
+            ['key' => 'test_field', 'value' => '323232223']
+        );
+
+        $this->assertTrue($client1 instanceof Client);
+        $this->assertEquals($client1->phones[0]['phone'], $phone1);
+        $this->assertEquals($client1->phones[0]['subscription_status'], 1);
+        $this->assertEquals($client1->phones[0]['status'], 1);
+        $this->assertEquals($client1->emails[0]['email'], $email1);
+        $this->assertEquals($client1->emails[0]['subscription_status'], 1);
+        $this->assertEquals($client1->emails[0]['status'], 1);
+
+        $clientRest2 = new Client($this->_connection);
+        $client2 = $clientRest2->get(
+            $externalId1,
+            $hash1,
+            'Mike',
+            null,
+            null,
+            null,
+            null,
+            [
+                [
+                    'contact' => $phone1,
+                    'subscribe_status' => 0,
+                    'validate_status' => 1,
+                ]
+            ],
+            [
+                [
+                    'contact' => $email1,
+                    'subscribe_status' => 0,
+                    'validate_status' => 1,
+                ]
+            ]
+        );
+
+        $this->assertTrue($client2 instanceof Client);
+        $this->assertEquals($client2->last_name, 'Mikeln');
+        $this->assertEquals($client2->middle_name, 'Mikemn');
+        $this->assertEquals($client2->birthdate['date'], '1985-12-02 00:00:00.000000');
+        $this->assertEquals($client2->gender, 0);
+        $this->assertEquals($client2->phones[0]['phone'], $phone1);
+        $this->assertEquals($client2->phones[0]['subscription_status'], 2);
+        $this->assertEquals($client2->phones[0]['status'], 1);
+        $this->assertEquals($client2->emails[0]['email'], $email1);
+        $this->assertEquals($client2->emails[0]['subscription_status'], 2);
+        $this->assertEquals($client2->emails[0]['status'], 1);
+    }
+
+    public function testOfClientRegistrationWithoutSubscribe()
+    {
+        $hash1 = md5(date('Ymdhms') . rand(10000, 30000));
+        $externalId1 = md5(date('Ymdhms') . rand(1000, 3000));
+        $phone1 = rand(10000000000, 30000000000);
+        $email1 = rand(1000000, 3000000) . '@mail.ru';
+
+        $clientRest1 = new Client($this->_connection);
+        $client1 = $clientRest1->get(
+            $externalId1,
+            $hash1,
+            'Mike',
+            'Mikeln',
+            'Mikemn',
+            [
+                'day' => '02',
+                'month' => '12',
+                'year' => '1985',
+            ],
+            0,
+            [
+                [
+                    'contact' => $phone1,
+                    'subscribe_status' => 0,
+                    'validate_status' => 1,
+                ]
+            ],
+            [
+                [
+                    'contact' => $email1,
+                    'subscribe_status' => 0,
+                    'validate_status' => 1,
+                ]
+            ],
+            'address string',
+            '4245',
+            '2222222',
+            [
+                'day' => '02',
+                'month' => '12',
+                'year' => '2001',
+            ],
+            'London',
+            [
+                'day' => '02',
+                'month' => '12',
+                'year' => '2001',
+                'hours' => '19',
+                'minutes' => '25',
+                'seconds' => '53',
+            ],
+            ['key' => 'test_field', 'value' => '323232223']
+        );
+
+        $this->assertTrue($client1 instanceof Client);
+        $this->assertEquals($client1->phones[0]['phone'], $phone1);
+        $this->assertEquals($client1->phones[0]['subscription_status'], 3);
+        $this->assertEquals($client1->phones[0]['status'], 1);
+        $this->assertEquals($client1->emails[0]['email'], $email1);
+        $this->assertEquals($client1->emails[0]['subscription_status'], 3);
+        $this->assertEquals($client1->emails[0]['status'], 1);
+
+        $clientRest2 = new Client($this->_connection);
+        $client2 = $clientRest2->get(
+            $externalId1,
+            $hash1,
+            'Mike',
+            null,
+            null,
+            null,
+            null,
+            [
+                [
+                    'contact' => $phone1,
+                    'subscribe_status' => 1,
+                    'validate_status' => 1,
+                ]
+            ],
+            [
+                [
+                    'contact' => $email1,
+                    'subscribe_status' => 1,
+                    'validate_status' => 1,
+                ]
+            ]
+        );
+
+        $this->assertTrue($client2 instanceof Client);
+        $this->assertEquals($client2->last_name, 'Mikeln');
+        $this->assertEquals($client2->middle_name, 'Mikemn');
+        $this->assertEquals($client2->birthdate['date'], '1985-12-02 00:00:00.000000');
+        $this->assertEquals($client2->gender, 0);
+        $this->assertEquals($client2->phones[0]['phone'], $phone1);
+        $this->assertEquals($client2->phones[0]['subscription_status'], 1);
+        $this->assertEquals($client2->phones[0]['status'], 1);
+        $this->assertEquals($client2->emails[0]['email'], $email1);
+        $this->assertEquals($client2->emails[0]['subscription_status'], 1);
+        $this->assertEquals($client2->emails[0]['status'], 1);
+
+        $clientRest3 = new Client($this->_connection);
+        $client3 = $clientRest3->get(
+            $externalId1,
+            $hash1,
+            'Mike',
+            null,
+            null,
+            null,
+            null,
+            [
+                [
+                    'contact' => $phone1,
+                    'subscribe_status' => 0,
+                    'validate_status' => 1,
+                ]
+            ],
+            [
+                [
+                    'contact' => $email1,
+                    'subscribe_status' => 0,
+                    'validate_status' => 1,
+                ]
+            ]
+        );
+
+        $this->assertTrue($client3 instanceof Client);
+        $this->assertEquals($client3->last_name, 'Mikeln');
+        $this->assertEquals($client3->middle_name, 'Mikemn');
+        $this->assertEquals($client3->birthdate['date'], '1985-12-02 00:00:00.000000');
+        $this->assertEquals($client3->gender, 0);
+        $this->assertEquals($client3->phones[0]['phone'], $phone1);
+        $this->assertEquals($client3->phones[0]['subscription_status'], 2);
+        $this->assertEquals($client3->phones[0]['status'], 1);
+        $this->assertEquals($client3->emails[0]['email'], $email1);
+        $this->assertEquals($client3->emails[0]['subscription_status'], 2);
+        $this->assertEquals($client3->emails[0]['status'], 1);
     }
 }
