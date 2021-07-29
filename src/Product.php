@@ -105,7 +105,9 @@ class Product extends Api implements ProductInterface
      */
     protected function findByExtItemIdOrBarcode(int $extItemId = null, string $barcode = null): int
     {
-        if (empty($extItemId) and empty($barcode)) throw new ProductException('At least one of the parameters must be specified.');
+        if (empty($extItemId) and empty($barcode)) {
+            throw new ProductException('At least one of the parameters must be specified.');
+        }
         $url = self::LIST_OF_PRODUCTS;
         $parameters = [];
         if ($extItemId) $parameters['ext_item_id'] = $extItemId;
@@ -203,7 +205,6 @@ class Product extends Api implements ProductInterface
         array $customFields = []
     ): array
     {
-
         $parametersArray = [
             'title' => $title,
             'ext_item_id' => $extItemId,
