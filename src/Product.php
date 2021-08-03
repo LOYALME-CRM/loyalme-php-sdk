@@ -238,7 +238,7 @@ class Product extends Api implements ProductInterface
      * @param array $customFields
      * @return ProductInterface
      */
-    public function create(
+    protected function create(
         string $title,
         float $price,
         string $photo = null,
