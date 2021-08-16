@@ -49,11 +49,11 @@ class Product extends Api implements ProductInterface
      * @throws ProductException
      */
     public function get(
-        string $title,
-        float $price,
-        string $photo = null,
         int $extItemId = null,
         string $barcode = null,
+        string $title = null,
+        float $price = null,
+        string $photo = null,
         int $isActive = 1,
         int $typeId = 1,
         float $accrualRate = 1,
@@ -62,6 +62,12 @@ class Product extends Api implements ProductInterface
         array $customFields = []
     ): ProductInterface
     {
+        if (empty($extItemId) && empty($barcode)) {
+            throw new ProductException('Parameters [extItemId] or [barcode] must be filled.');
+        }
+        if (empty($title) || empty($price)) {
+            throw new ProductException('Parameters [title] and [price] must be both filled. It\'s required fields!');
+        }
         $categoriesArray = $this->processCategoriesArray($categories);
         try {
             $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
@@ -83,7 +89,9 @@ class Product extends Api implements ProductInterface
      */
     private function processCategoriesArray(array $array = []): array
     {
-        if (empty($array)) throw new ProductException('The category parameter is required and must be filled', 422);
+        if (empty($array)) {
+            throw new ProductException('The category parameter is required and must be filled', 422);
+        }
 
         return array_map(function ($value) {
             if (!$value instanceof CategoryInterface) {
