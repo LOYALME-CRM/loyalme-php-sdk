@@ -77,7 +77,7 @@ class Product extends Api implements ProductInterface
             if (empty($categories)) {
                 throw new ProductException('Categories can not be empty', 422, ['categories' => 'must be filled']);
             }
-            $result = $this->create($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
+            $result = $this->create($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categoriesArray, $aliases, $customFields);
             return $result;
         }
     }
