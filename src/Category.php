@@ -22,11 +22,13 @@ class Category extends Api implements CategoryInterface
     /**
      * Category constructor.
      * @param Connection $connection
+     * @param CategoryInterface|null $parentCategory
      * @throws CategoryException
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, CategoryInterface $parentCategory = null)
     {
         parent::__construct($connection);
+        $this->setParentCategory($parentCategory);
     }
 
     /**
@@ -46,6 +48,7 @@ class Category extends Api implements CategoryInterface
      */
     public function get(string $extCategoryId, string $name, CategoryInterface $parentCategory = null): CategoryInterface
     {
+        $this->setParentCategory($parentCategory);
         try {
             $this->update($extCategoryId, $name, $parentCategory);
         } catch (CategorySearchException $e) {
