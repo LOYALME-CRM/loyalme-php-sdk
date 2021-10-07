@@ -130,12 +130,12 @@ ___
 
 ###### code
     try{
-        $product = $productObject->get(
+        $product = $productListObject->get(
             string $systemName = null,
             string $name = null,
             int $pointId = null
         );
-    } catch (ProductException $e) {
+    } catch (ProductListException $e) {
         var_dump($e->getErrorData);
         var_dump($e->getCode);
         var_dump($e->getErrorMessage);
