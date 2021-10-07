@@ -55,13 +55,13 @@ class ProductList extends Api implements ProductListInterface
     /**
      * @param string $name
      * @param string $systemName
-     * @param int $pointId
+     * @param int|null $pointId
      * @return ProductListInterface
      */
     protected function create(
         string $name,
         string $systemName,
-        int $pointId
+        int $pointId = null
     ): ProductListInterface
     {
         $url = self::CREATE_PRODUCT_LIST;
