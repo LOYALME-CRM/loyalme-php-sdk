@@ -3,6 +3,7 @@ nbproject
 /tests/acceptance.suite.yml
 /tests/functional.suite.yml
 /tests/unit.suite.yml
+composer.lock
 
 # Vendor
 /vendor

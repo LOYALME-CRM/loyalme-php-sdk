@@ -120,3 +120,46 @@ ___
 
 `$productAttributes = $productObject->id;`
 
+## ProductList
+
+### How to create the object
+
+`$productListObject = new ProductList($connection);`
+
+#### Get product list
+
+###### code
+    try{
+        $product = $productListObject->get(
+            string $systemName = null,
+            string $name = null,
+            int $pointId = null
+        );
+    } catch (ProductListException $e) {
+        var_dump($e->getErrorData);
+        var_dump($e->getCode);
+        var_dump($e->getErrorMessage);
+    }
+
+###### result:
+    ProductList {
+        "attributes": [
+            "id": int
+            "name": string
+            "system_name": string
+            "point_id": int
+        ]
+        "_connection": Connection
+    }
+
+#### Parameters' types
+
+**string** systemName _required*_
+**string** name
+**int** point_id
+
+`$productListAttributes = $productListObject->attributes; //array`
+
+**Also you can refer to any property of the object directly:**
+
+`$productListAttributes = $productListObject->id;`
