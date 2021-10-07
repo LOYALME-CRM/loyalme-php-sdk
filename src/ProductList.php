@@ -97,7 +97,7 @@ class ProductList extends Api implements ProductListInterface
      * @param string $systemName
      * @return int
      * @throws Exceptions\LoyalmePhpSdkException
-     * @throws ProductSearchException
+     * @throws ProductListSearchException
      */
     protected function findIdBySystemName(string $systemName): int
     {
@@ -105,7 +105,7 @@ class ProductList extends Api implements ProductListInterface
         $result = $this->_connection->sendGetRequest($url, ['system_name' => $systemName]);
         $this->checkResponseForErrors($result);
         if (!isset($result['data'][0]['id'])) {
-            throw new ProductSearchException(
+            throw new ProductListSearchException(
                 sprintf('Product list with systemName:[%s] was not found', $systemName),
                 404
             );
