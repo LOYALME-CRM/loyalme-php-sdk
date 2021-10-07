@@ -43,7 +43,7 @@ class ProductList extends Api implements ProductListInterface
     ): ProductListInterface
     {
         if ($systemName === null) {
-            throw new ProductListException('Parameter [systemName] must is required.');
+            throw new ProductListException('Parameter [systemName] is required.');
         }
         try {
             $this->update($name, $systemName, $pointId);
