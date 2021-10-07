@@ -158,8 +158,8 @@ ___
 **string** name
 **int** point_id
 
-`$productAttributes = $productObject->attributes; //array`
+`$productListAttributes = $productListObject->attributes; //array`
 
 **Also you can refer to any property of the object directly:**
 
-`$productAttributes = $productObject->id;`
+`$productListAttributes = $productListObject->id;`
