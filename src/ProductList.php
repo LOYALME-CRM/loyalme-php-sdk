@@ -4,7 +4,6 @@ namespace LoyalmeCRM\LoyalmePhpSdk;
 
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductListException;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductListSearchException;
-use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductSearchException;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ProductListInterface;
 
 /**
