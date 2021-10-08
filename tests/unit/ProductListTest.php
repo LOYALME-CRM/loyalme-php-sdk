@@ -1,6 +1,5 @@
 <?php
 
-use Codeception\Example;
 use Codeception\Test\Unit;
 use LoyalmeCRM\LoyalmePhpSdk\Connection;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductListException;
