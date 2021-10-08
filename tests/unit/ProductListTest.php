@@ -44,7 +44,16 @@ class ProductListTest extends Unit
             $this->assertEquals($systemName, $productList->system_name);
             $this->assertEquals($name, $productList->name);
         } catch (ProductListException $exception) {
-            $this->fail($exception->getMessage());
+            if ($exception->getMessage() == 'Could not create new ProductList') {
+                $errorData = $exception->getErrorData();
+                $errors = [$exception->getMessage()];
+                foreach ($errorData as $field => $val) {
+                    $errors[] = sprintf('Reason: param[%s] - %s', $field, $val[0]);
+                }
+                $this->markTestIncomplete(implode(PHP_EOL, $errors));
+            } else {
+                $this->fail($exception->getMessage());
+            }
         }
         // Trying to update Product list by same system_name
         try {
