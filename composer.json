@@ -2,11 +2,8 @@
     "name": "loyalme-crm/loyalme-php-sdk",
     "description": "sdk for working with loyalme REST API",
     "type": "library",
-    "require": {
-        
-    },
     "require-dev": {
-
+        "fzaninotto/faker": "^1.5"
     },
     "conflict": {
 

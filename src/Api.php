@@ -128,7 +128,7 @@ abstract class Api
         } elseif ($result['status_code'] == 200) {
             $this->attributes['result'] = $result;
         } elseif (isset($result['errors']) && $result['errors']) {
-            throw new $classNameException('Error operation', $result['status_code'], $result['errors']);
+            throw new $classNameException($result['message'] ?? 'Error operation', $result['status_code'], $result['errors']);
         } elseif ($result['status_code'] == 200) {
             return $this; //for deleting requests - it need in some methods of API
         } else {

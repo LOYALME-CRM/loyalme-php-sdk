@@ -19,7 +19,6 @@ class ProductList extends Api implements ProductListInterface
     const UPDATE_PRODUCT_LIST = 'product-list/%d';
     const ADD_PRODUCT_TO_PRODUCT_LIST = 'product-list/%d/add-product';
 
-
     /**
      * @return string
      */
@@ -70,7 +69,7 @@ class ProductList extends Api implements ProductListInterface
             'system_name' => $systemName,
             'point_id' => $pointId
         ];
-        $result = $this->_connection->sendPutRequest($url, $data);
+        $result = $this->_connection->sendPostRequest($url, $data);
         return $this->fill($result);
     }
 
