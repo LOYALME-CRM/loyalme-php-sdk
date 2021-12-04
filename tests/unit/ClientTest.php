@@ -1087,14 +1087,14 @@ class ClientTest extends Unit
             [
                 [
                     'contact' => $phone1,
-                    'subscribe_status' => 1,
+                    'subscribe_status' => 0,
                     'validate_status' => 1,
                 ]
             ],
             [
                 [
                     'contact' => $email1,
-                    'subscribe_status' => 1,
+                    'subscribe_status' => 0,
                     'validate_status' => 1,
                 ]
             ]
@@ -1106,10 +1106,10 @@ class ClientTest extends Unit
         $this->assertEquals($client2->birthdate['date'], '1985-12-02 00:00:00.000000');
         $this->assertEquals($client2->gender, 0);
         $this->assertEquals($client2->phones[0]['phone'], $phone1);
-        $this->assertEquals($client2->phones[0]['subscription_status'], 1);
+        $this->assertEquals($client2->phones[0]['subscription_status'], 2);
         $this->assertEquals($client2->phones[0]['status'], 1);
         $this->assertEquals($client2->emails[0]['email'], $email1);
-        $this->assertEquals($client2->emails[0]['subscription_status'], 1);
+        $this->assertEquals($client2->emails[0]['subscription_status'], 2);
         $this->assertEquals($client2->emails[0]['status'], 1);
     }
 
@@ -1136,14 +1136,14 @@ class ClientTest extends Unit
             [
                 [
                     'contact' => $phone1,
-                    'subscribe_status' => 1,
+                    'subscribe_status' => 0,
                     'validate_status' => 1,
                 ]
             ],
             [
                 [
                     'contact' => $email1,
-                    'subscribe_status' => 1,
+                    'subscribe_status' => 0,
                     'validate_status' => 1,
                 ]
             ],
@@ -1169,10 +1169,10 @@ class ClientTest extends Unit
 
         $this->assertTrue($client1 instanceof Client);
         $this->assertEquals($client1->phones[0]['phone'], $phone1);
-        $this->assertEquals($client1->phones[0]['subscription_status'], 1);
+        $this->assertEquals($client1->phones[0]['subscription_status'], 3);
         $this->assertEquals($client1->phones[0]['status'], 1);
         $this->assertEquals($client1->emails[0]['email'], $email1);
-        $this->assertEquals($client1->emails[0]['subscription_status'], 1);
+        $this->assertEquals($client1->emails[0]['subscription_status'], 3);
         $this->assertEquals($client1->emails[0]['status'], 1);
 
         $clientRest2 = new Client($this->_connection);
@@ -1224,14 +1224,14 @@ class ClientTest extends Unit
             [
                 [
                     'contact' => $phone1,
-                    'subscribe_status' => 1,
+                    'subscribe_status' => 0,
                     'validate_status' => 1,
                 ]
             ],
             [
                 [
                     'contact' => $email1,
-                    'subscribe_status' => 1,
+                    'subscribe_status' => 0,
                     'validate_status' => 1,
                 ]
             ]
@@ -1243,10 +1243,10 @@ class ClientTest extends Unit
         $this->assertEquals($client3->birthdate['date'], '1985-12-02 00:00:00.000000');
         $this->assertEquals($client3->gender, 0);
         $this->assertEquals($client3->phones[0]['phone'], $phone1);
-        $this->assertEquals($client3->phones[0]['subscription_status'], 1);
+        $this->assertEquals($client3->phones[0]['subscription_status'], 2);
         $this->assertEquals($client3->phones[0]['status'], 1);
         $this->assertEquals($client3->emails[0]['email'], $email1);
-        $this->assertEquals($client3->emails[0]['subscription_status'], 1);
+        $this->assertEquals($client3->emails[0]['subscription_status'], 2);
         $this->assertEquals($client3->emails[0]['status'], 1);
     }
 }
