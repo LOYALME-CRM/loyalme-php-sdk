@@ -370,18 +370,20 @@ class Client extends Api implements ClientInterface
         $result = null;
         if ($externalId) {
             $result = $this->findByExternalId($externalId);
-            if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-                $result = null;
-            } else {
+
+            if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 0) {
                 $foundByExternalId = true;
+            } else {
+                $result = null;
             }
         }
         if ((empty($externalId)) && is_null($result) && $fingerPrint && $name != self::CLIENT_NAME_SUBSCRIBER) {
             $result = $this->findByFingerprint($fingerPrint);
-            if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-                $result = null;
-            } else {
+
+            if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 0) {
                 $foundByFingerPrint = true;
+            } else {
+                $result = null;
             }
         }
         if (is_null($result) && $emails) {
@@ -391,10 +393,11 @@ class Client extends Api implements ClientInterface
                     break;
                 }
             }
-            if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-                $result = null;
-            } else {
+
+            if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 0) {
                 $foundByEmail = true;
+            } else {
+                $result = null;
             }
         }
         if (is_null($result) && $phones) {
@@ -404,10 +407,11 @@ class Client extends Api implements ClientInterface
                     break;
                 }
             }
-            if (isset($result['status_code']) && $result['status_code'] == Connection::STATUS_CODE_NOT_FOUND) {
-                $result = null;
-            } else {
+
+            if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 0) {
                 $foundByPhone = true;
+            } else {
+                $result = null;
             }
         }
         if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 1) {
