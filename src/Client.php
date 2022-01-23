@@ -38,10 +38,6 @@ class Client extends Api implements ClientInterface
      * @param null|array $phones
      * @param null|array $emails
      * @param string $address
-     * @param string $passportSeria
-     * @param string $passportNumber
-     * @param array $passportIssuedDate
-     * @param string $passportIssuedBy
      * @param array $dateOfRegistered
      * @param array $attributes
      * @return array
@@ -56,10 +52,6 @@ class Client extends Api implements ClientInterface
         ?array $phones = null,
         ?array $emails = null,
         string $address = null,
-        string $passportSeria = null,
-        string $passportNumber = null,
-        array $passportIssuedDate = null,
-        string $passportIssuedBy = null,
         array $dateOfRegistered = null,
         array $attributes
     ): array
@@ -115,20 +107,8 @@ class Client extends Api implements ClientInterface
         if (!is_null($address)) {
             $params['address'] = $address;
         }
-        if (!is_null($passportSeria)) {
-            $params['passport_seria'] = $passportSeria;
-        }
-        if (!is_null($passportNumber)) {
-            $params['passport_number'] = $passportNumber;
-        }
-        if (!is_null($passportIssuedDate)) {
-            $params['passport_issued_date_select'] = $passportIssuedDate;
-        }
-        if (!is_null($passportIssuedBy)) {
-            $params['passport_issued_by'] = $passportIssuedBy;
-        }
         if (!is_null($dateOfRegistered)) {
-            $params['date_of_registered'] = $dateOfRegistered;
+            $params['registered_at'] = $dateOfRegistered['year'] . '-' . $dateOfRegistered['month'] . '-' . $dateOfRegistered['day'] . ' ' . $dateOfRegistered['hours'] . ':' . $dateOfRegistered['minutes'] . ':' . $dateOfRegistered['seconds'];
         }
         if ($attributes) {
             foreach ($attributes as $attribute) {
@@ -149,10 +129,6 @@ class Client extends Api implements ClientInterface
      * @param null|array $phones - [["phone"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param null|array $emails - [["email"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param array $address
-     * @param array $passportSeria
-     * @param array $passportNumber
-     * @param array $passportIssuedDate
-     * @param array $passportIssuedBy
      * @param type $attribute - custom attributes if they exist
      */
     protected function create(
@@ -165,18 +141,13 @@ class Client extends Api implements ClientInterface
         ?array $phones = null,
         ?array $emails = null,
         string $address = null,
-        string $passportSeria = null,
-        string $passportNumber = null,
-        array $passportIssuedDate = null,
-        string $passportIssuedBy = null,
         array $dateOfRegistered = null,
         ...$attributes
     ): ClientInterface
     {
         $params = $this->prepareDataForSave(
             $externalId, $name, $lastName, $middleName, $birthdate, $gender,
-            $phones, $emails, $address, $passportSeria, $passportNumber,
-            $passportIssuedDate, $passportIssuedBy, $dateOfRegistered, $attributes
+            $phones, $emails, $address, $dateOfRegistered, $attributes
         );
         $result = $this->_connection->sendPostRequest(self::ACTION_CREATE, $params);
         $this->fill($result);
@@ -195,10 +166,6 @@ class Client extends Api implements ClientInterface
      * @param null|array $phones - [["phone"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param null|array $emails - [["email"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param array $address
-     * @param array $passportSeria
-     * @param array $passportNumber
-     * @param array $passportIssuedDate
-     * @param array $passportIssuedBy
      * @param type $attribute - custom attributes if they exist
      */
     protected function update(
@@ -212,18 +179,13 @@ class Client extends Api implements ClientInterface
         ?array $phones = null,
         ?array $emails = null,
         string $address = null,
-        string $passportSeria = null,
-        string $passportNumber = null,
-        array $passportIssuedDate = null,
-        string $passportIssuedBy = null,
         array $dateOfRegistered = null,
         ...$attributes
     ): ClientInterface
     {
         $params = $this->prepareDataForSave(
             $externalId, $name, $lastName, $middleName, $birthdate, $gender,
-            $phones, $emails, $address, $passportSeria, $passportNumber,
-            $passportIssuedDate, $passportIssuedBy, $dateOfRegistered, $attributes
+            $phones, $emails, $address, $dateOfRegistered, $attributes
         );
         $result = $this->_connection->sendPutRequest(sprintf(self::ACTION_UPDATE, $id), $params);
         $this->fill($result);
@@ -316,10 +278,6 @@ class Client extends Api implements ClientInterface
      * @param null|array $phones - [["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param null|array $emails - [["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param array $address
-     * @param array $passportSeria
-     * @param array $passportNumber
-     * @param array $passportIssuedDate - ["day"="", "month"="", "year"=""]
-     * @param array $passportIssuedBy
      * @param type $attributes - custom attributes if they exist ["key"="", "value"=""]
      */
     public function get(
@@ -333,10 +291,6 @@ class Client extends Api implements ClientInterface
         ?array $phones = null,
         ?array $emails = null,
         string $address = null,
-        string $passportSeria = null,
-        string $passportNumber = null,
-        array $passportIssuedDate = null,
-        string $passportIssuedBy = null,
         array $dateOfRegistered = null,
         ...$attributes
     ): ClientInterface
@@ -352,9 +306,6 @@ class Client extends Api implements ClientInterface
         }
         if (is_array($emails)) {
             $this->validateArrayStructure(['contact', 'subscribe_status', 'validate_status'], $emails, 'emails', false);
-        }
-        if (is_array($passportIssuedDate)) {
-            $this->validateArrayStructure(['day', 'month', 'year'], $passportIssuedDate, 'passportIssuedDate');
         }
         if (is_array($dateOfRegistered)) {
             $this->validateArrayStructure(['day', 'month', 'year', 'hours', 'minutes', 'seconds'], $dateOfRegistered, 'dateOfRegistered');
@@ -426,8 +377,7 @@ class Client extends Api implements ClientInterface
         }
         $params = [
             $externalId, $name, $lastName, $middleName, $birthdate, $gender, $phones,
-            $emails, $address, $passportSeria, $passportNumber, $passportIssuedDate, 
-            $passportIssuedBy, $dateOfRegistered
+            $emails, $address, $dateOfRegistered
         ];
 
         if ($attributes) {
