@@ -81,14 +81,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -183,14 +175,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -250,14 +234,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string more',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -383,14 +359,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -478,14 +446,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -579,14 +539,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -716,14 +668,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -808,14 +752,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -863,14 +799,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -971,14 +899,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -1048,14 +968,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
@@ -1148,14 +1060,6 @@ class ClientTest extends Unit
                 ]
             ],
             'address string',
-            '4245',
-            '2222222',
-            [
-                'day' => '02',
-                'month' => '12',
-                'year' => '2001',
-            ],
-            'London',
             [
                 'day' => '02',
                 'month' => '12',
