@@ -37,7 +37,6 @@ class Client extends Api implements ClientInterface
      * @param null|int $gender
      * @param null|array $phones
      * @param null|array $emails
-     * @param string $address
      * @param array $dateOfRegistered
      * @param array $attributes
      * @return array
@@ -51,7 +50,6 @@ class Client extends Api implements ClientInterface
         ?int $gender = 0,
         ?array $phones = null,
         ?array $emails = null,
-        string $address = null,
         array $dateOfRegistered = null,
         array $attributes
     ): array
@@ -104,9 +102,6 @@ class Client extends Api implements ClientInterface
             $params['other_emails_subscribe'] = $otherEmailsSubscribe;
             $params['other_emails_validate'] = $otherEmailsValidate;
         }
-        if (!is_null($address)) {
-            $params['address'] = $address;
-        }
         if (!is_null($dateOfRegistered)) {
             $params['registered_at'] = $dateOfRegistered['year'] . '-' . $dateOfRegistered['month'] . '-' . $dateOfRegistered['day'] . ' ' . $dateOfRegistered['hours'] . ':' . $dateOfRegistered['minutes'] . ':' . $dateOfRegistered['seconds'];
         }
@@ -128,10 +123,9 @@ class Client extends Api implements ClientInterface
      * @param null|int $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
      * @param null|array $phones - [["phone"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param null|array $emails - [["email"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
-     * @param array $address
      * @param type $attribute - custom attributes if they exist
      */
-    protected function create(
+    protected function _create(
         string $externalId = null,
         string $name,
         string $lastName = null,
@@ -140,14 +134,13 @@ class Client extends Api implements ClientInterface
         ?int $gender = 0,
         ?array $phones = null,
         ?array $emails = null,
-        string $address = null,
         array $dateOfRegistered = null,
         ...$attributes
     ): ClientInterface
     {
         $params = $this->prepareDataForSave(
             $externalId, $name, $lastName, $middleName, $birthdate, $gender,
-            $phones, $emails, $address, $dateOfRegistered, $attributes
+            $phones, $emails, $dateOfRegistered, $attributes
         );
         $result = $this->_connection->sendPostRequest(self::ACTION_CREATE, $params);
         $this->_fill($result);
@@ -165,10 +158,9 @@ class Client extends Api implements ClientInterface
      * @param null|int $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
      * @param null|array $phones - [["phone"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param null|array $emails - [["email"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
-     * @param array $address
      * @param type $attribute - custom attributes if they exist
      */
-    protected function update(
+    protected function _update(
         int $id,
         string $externalId = null,
         string $name = null,
@@ -178,14 +170,13 @@ class Client extends Api implements ClientInterface
         ?int $gender = 0,
         ?array $phones = null,
         ?array $emails = null,
-        string $address = null,
         array $dateOfRegistered = null,
         ...$attributes
     ): ClientInterface
     {
         $params = $this->prepareDataForSave(
             $externalId, $name, $lastName, $middleName, $birthdate, $gender,
-            $phones, $emails, $address, $dateOfRegistered, $attributes
+            $phones, $emails, $dateOfRegistered, $attributes
         );
         $result = $this->_connection->sendPutRequest(sprintf(self::ACTION_UPDATE, $id), $params);
         $this->_fill($result);
@@ -277,7 +268,6 @@ class Client extends Api implements ClientInterface
      * @param null|int $gender - Gender of the client. 0 - not selected, 1 - male, 2 - female
      * @param null|array $phones - [["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
      * @param null|array $emails - [["contact"=>"", "subscribe_status"=>0/1, "validate_status"=>1/2/3/4]]
-     * @param array $address
      * @param type $attributes - custom attributes if they exist ["key"="", "value"=""]
      */
     public function get(
@@ -290,7 +280,6 @@ class Client extends Api implements ClientInterface
         ?int $gender = 0,
         ?array $phones = null,
         ?array $emails = null,
-        string $address = null,
         array $dateOfRegistered = null,
         ...$attributes
     ): ClientInterface
@@ -377,7 +366,7 @@ class Client extends Api implements ClientInterface
         }
         $params = [
             $externalId, $name, $lastName, $middleName, $birthdate, $gender, $phones,
-            $emails, $address, $dateOfRegistered
+            $emails, $dateOfRegistered
         ];
 
         if ($attributes) {
@@ -390,10 +379,10 @@ class Client extends Api implements ClientInterface
             if (empty($name)) {
                 throw new ClientException('Param of name is required for new client', 400);
             }
-            $client = call_user_func_array([$this, 'create'], $params);
+            $client = call_user_func_array([$this, '_create'], $params);
         } else {
             array_unshift($params, $result['data'][0]['id']);
-            $client = call_user_func_array([$this, 'update'], $params);
+            $client = call_user_func_array([$this, '_update'], $params);
         }
 
         if ($fingerPrint && !$foundByFingerPrint) {

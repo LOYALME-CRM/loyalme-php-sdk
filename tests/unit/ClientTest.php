@@ -80,7 +80,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -174,7 +173,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -233,7 +231,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string more',
             [
                 'day' => '02',
                 'month' => '12',
@@ -358,7 +355,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -445,7 +441,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -538,7 +533,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -667,7 +661,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -751,7 +744,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -798,7 +790,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -898,7 +889,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -967,7 +957,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',
@@ -1059,7 +1048,6 @@ class ClientTest extends Unit
                     'validate_status' => 1,
                 ]
             ],
-            'address string',
             [
                 'day' => '02',
                 'month' => '12',

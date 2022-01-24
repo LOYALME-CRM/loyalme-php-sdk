@@ -184,9 +184,47 @@ ___
         print_r($e->getCode);
         print_r($e->getErrorMessage);
     }
-      
+
 ###### result:
     OrderStatus {
+        "attributes": [
+            "id": int
+            "slug": string
+            "title_en": string
+            "title_ru": string
+        ]
+        "_connection": Connection
+    }
+
+#### Parameters' types
+
+**string** slug _required*_    
+**string** title_en _required*_   
+**string** title_ru
+
+## PaymentMethod:  
+___
+### How to create the object  
+
+`$paymentMethodObject = new PaymentMethod($connection);`
+
+#### Get payment method
+
+###### code:
+    try {
+        $paymentMethod = $paymentMethodObject->get(
+            string $slug,
+            string $titleEn,
+            string $titleRu
+        );
+    } catch (PaymentMethodException $e) {
+        print_r($e->getErrorData);
+        print_r($e->getCode);
+        print_r($e->getErrorMessage);
+    }
+
+###### result:
+    PaymentMethod {
         "attributes": [
             "id": int
             "slug": string
