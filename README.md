@@ -198,6 +198,6 @@ ___
 
 #### Parameters' types
 
-**string** title_en _required*_    
+**string** slug _required*_    
 **string** title_en _required*_   
 **string** title_ru
