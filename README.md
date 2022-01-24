@@ -239,3 +239,42 @@ ___
 **string** slug _required*_    
 **string** title_en _required*_   
 **string** title_ru
+
+
+## DeliveryMethod:  
+___
+### How to create the object  
+
+`$deliveryMethodObject = new DeliveryMethod($connection);`
+
+#### Get delivery method
+
+###### code:
+    try {
+        $deliveryMethod = $deliveryMethodObject->get(
+            string $slug,
+            string $titleEn,
+            string $titleRu
+        );
+    } catch (DeliveryMethodException $e) {
+        print_r($e->getErrorData);
+        print_r($e->getCode);
+        print_r($e->getErrorMessage);
+    }
+
+###### result:
+    DeliveryMethod {
+        "attributes": [
+            "id": int
+            "slug": string
+            "title_en": string
+            "title_ru": string
+        ]
+        "_connection": Connection
+    }
+
+#### Parameters' types
+
+**string** slug _required*_    
+**string** title_en _required*_   
+**string** title_ru
