@@ -45,7 +45,7 @@ class Activity extends Api implements ActivityInterface
     public function getEventTypes(): Activity
     {
         $result = $this->_connection->sendGetRequest(self::ACTION_LIST, []);
-        $this->fill($result);
+        $this->_fill($result);
         return $this;
     }
 
@@ -68,14 +68,14 @@ class Activity extends Api implements ActivityInterface
             'activity_attributes' => $activityAttributes,
         ];
         $result = $this->_connection->sendPostRequest(self::ACTION_FIRE_EVENT, $data);
-        $this->fill($result);
+        $this->_fill($result);
         return $this;
     }
 
     /**
      * @inheritdoc
      */
-    protected function getClassNameException(): string
+    protected function _getClassNameException(): string
     {
         return ActivityException::class;
     }
