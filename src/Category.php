@@ -8,11 +8,11 @@ use LoyalmeCRM\LoyalmePhpSdk\Interfaces\CategoryInterface;
 
 class Category extends Api implements CategoryInterface
 {
-    const LIST_OF_CATEGORIES = "category";
-    const CREATE_CATEGORY = "category";
-    const SHOW_CATEGORY = "category/%d";
-    const UPDATE_CATEGORY = "category/%d";
-    const DELETE_CATEGORY = "category/%d";
+    const LIST_OF_CATEGORIES = 'category';
+    const CREATE_CATEGORY = 'category';
+    const SHOW_CATEGORY = 'category/%d';
+    const UPDATE_CATEGORY = 'category/%d';
+    const DELETE_CATEGORY = 'category/%d';
 
     /**
      * @var CategoryInterface
@@ -70,7 +70,7 @@ class Category extends Api implements CategoryInterface
 
         $data = $this->fillParams($extCategoryId, $name, $parentCategory);
         $result = $this->_connection->sendPutRequest($url, $data);
-        return $this->fill($result);
+        return $this->_fill($result);
     }
 
     /**
@@ -140,7 +140,7 @@ class Category extends Api implements CategoryInterface
         $url = self::CREATE_CATEGORY;
         $data = $this->fillParams($extCategoryId, $name, $parentCategory);
         $result = $this->_connection->sendPostRequest($url, $data);
-        $this->fill($result);
+        $this->_fill($result);
         return $this;
     }
 
@@ -155,13 +155,13 @@ class Category extends Api implements CategoryInterface
         $id = $this->findByExtItemId($extCategoryId);
         $url = sprintf(self::DELETE_CATEGORY, $id);
         $result = $this->_connection->sendDeleteRequest($url);
-        return $this->fill($result);
+        return $this->_fill($result);
     }
 
     /**
      * @return string
      */
-    protected function getClassNameException(): string
+    protected function _getClassNameException(): string
     {
         return CategoryException::class;
     }

@@ -163,3 +163,41 @@ ___
 **Also you can refer to any property of the object directly:**
 
 `$productListAttributes = $productListObject->id;`
+
+## OrderStatus:  
+___
+### How to create the object  
+
+`$orderStatusObject = new OrderStatus($connection);`
+
+#### Get order status
+
+###### code:
+    try {
+        $orderStatus = $orderStatusObject->get(
+            string $slug,
+            string $titleEn,
+            string $titleRu
+        );
+    } catch (OrderStatusException $e) {
+        print_r($e->getErrorData);
+        print_r($e->getCode);
+        print_r($e->getErrorMessage);
+    }
+      
+###### result:
+    OrderStatus {
+        "attributes": [
+            "id": int
+            "slug": string
+            "title_en": string
+            "title_ru": string
+        ]
+        "_connection": Connection
+    }
+
+#### Parameters' types
+
+**string** slug _required*_    
+**string** title_en _required*_   
+**string** title_ru

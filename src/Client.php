@@ -23,7 +23,7 @@ class Client extends Api implements ClientInterface
     /**
      * @inheritdoc
      */
-    protected function getClassNameException(): string
+    protected function _getClassNameException(): string
     {
         return ClientException::class;
     }
@@ -150,7 +150,7 @@ class Client extends Api implements ClientInterface
             $phones, $emails, $address, $dateOfRegistered, $attributes
         );
         $result = $this->_connection->sendPostRequest(self::ACTION_CREATE, $params);
-        $this->fill($result);
+        $this->_fill($result);
 
         return $this;
     }
@@ -188,7 +188,7 @@ class Client extends Api implements ClientInterface
             $phones, $emails, $address, $dateOfRegistered, $attributes
         );
         $result = $this->_connection->sendPutRequest(sprintf(self::ACTION_UPDATE, $id), $params);
-        $this->fill($result);
+        $this->_fill($result);
 
         return $this;
     }
@@ -217,7 +217,7 @@ class Client extends Api implements ClientInterface
         ]);
 
         if ($fillIn && isset($result['data'][0])) {
-            $this->fill(['data' => $result['data'][0]]);
+            $this->_fill(['data' => $result['data'][0]]);
             return $this;
         }
 
@@ -262,7 +262,7 @@ class Client extends Api implements ClientInterface
     public function getById(int $clientId)
     {
         $result = $this->_connection->sendGetRequest(sprintf(self::ACTION_SHOW, $clientId), []);
-        $this->fill($result);
+        $this->_fill($result);
 
         return $this;
     }

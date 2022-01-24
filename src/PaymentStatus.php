@@ -98,7 +98,7 @@ class PaymentStatus extends Api implements PaymentStatusInterface
     {
         $url = self::CREATE_PAYMENT_STATUS;
         $result = $this->_connection->sendPostRequest($url, $this->paramsArray);
-        $this->fill($result);
+        $this->_fill($result);
         return $this;
     }
 
@@ -109,7 +109,7 @@ class PaymentStatus extends Api implements PaymentStatusInterface
     {
         $url = sprintf(self::UPDATE_PAYMENT_STATUS, $this->lastSearchResult['data'][0]['id']);
         $result = $this->_connection->sendPutRequest($url, $this->getOnlyFilledParams());
-        $this->fill($result);
+        $this->_fill($result);
         return $this;
     }
 
@@ -134,14 +134,14 @@ class PaymentStatus extends Api implements PaymentStatusInterface
         }
         $url = sprintf(self::DELETE_PAYMENT_STATUS, $this->lastSearchResult['data'][0]['id']);
         $result = $this->_connection->sendDeleteRequest($url);
-        $this->fill($result);
+        $this->_fill($result);
         return $this;
     }
 
     /**
      * @return string
      */
-    protected function getClassNameException(): string
+    protected function _getClassNameException(): string
     {
         return PaymentStatusException::class;
     }

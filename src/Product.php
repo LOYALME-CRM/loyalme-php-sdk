@@ -182,7 +182,7 @@ class Product extends Api implements ProductInterface
             $aliases,
             $customFields);
         $result = $this->_connection->sendPutRequest($url, $data);
-        return $this->fill($result);
+        return $this->_fill($result);
     }
 
     /**
@@ -263,7 +263,7 @@ class Product extends Api implements ProductInterface
         $url = self::CREATE_PRODUCT;
         $data = $this->fillParams($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
         $result = $this->_connection->sendPostRequest($url, $data);
-        return $this->fill($result);
+        return $this->_fill($result);
     }
 
     /**
@@ -278,13 +278,13 @@ class Product extends Api implements ProductInterface
         $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
         $url = sprintf(self::DELETE_PRODUCT, $id);
         $result = $this->_connection->sendDeleteRequest($url);
-        return $this->fill($result);
+        return $this->_fill($result);
     }
 
     /**
      * @return string
      */
-    protected function getClassNameException(): string
+    protected function _getClassNameException(): string
     {
         return ProductException::class;
     }

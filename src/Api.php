@@ -102,7 +102,7 @@ abstract class Api
         if (isset($response['data'])) {
             return true;
         }
-        $classException = $this->getClassNameException();
+        $classException = $this->_getClassNameException();
         if (!isset($response['status_code'])) {
             $result = sprintf('API call error: %s', print_r($response, true));
             throw new $classException($result, 500);
@@ -117,10 +117,10 @@ abstract class Api
      * @param array $result
      * @return $this
      */
-    protected function fill(array $result)
+    protected function _fill(array $result)
     {
         $this->attributes = [];
-        $classNameException = $this->getClassNameException();
+        $classNameException = $this->_getClassNameException();
         if (isset($result['data'])) {
             foreach ($result['data'] as $field => $value) {
                 $this->attributes[$field] = $value;
@@ -143,5 +143,5 @@ abstract class Api
     /**
      * @return string
      */
-    abstract protected function getClassNameException(): string;
+    abstract protected function _getClassNameException(): string;
 }

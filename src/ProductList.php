@@ -22,7 +22,7 @@ class ProductList extends Api implements ProductListInterface
     /**
      * @return string
      */
-    protected function getClassNameException(): string
+    protected function _getClassNameException(): string
     {
         return ProductListException::class;
     }
@@ -70,7 +70,7 @@ class ProductList extends Api implements ProductListInterface
             'point_id' => $pointId
         ];
         $result = $this->_connection->sendPostRequest($url, $data);
-        return $this->fill($result);
+        return $this->_fill($result);
     }
 
     /**
@@ -88,7 +88,7 @@ class ProductList extends Api implements ProductListInterface
             'point_id' => $pointId,
             'name' => $name
         ]);
-        return $this->fill($result);
+        return $this->_fill($result);
     }
 
     /**
