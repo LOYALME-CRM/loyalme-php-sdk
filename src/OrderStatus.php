@@ -31,10 +31,6 @@ class OrderStatus extends Api implements OrderStatusInterface
      */
     public function get(string $slug, string $titleEn, string $titleRu = ''): OrderStatusInterface
     {
-        if (empty($titleRu)) {
-            $titleRu = $titleEn;
-        }
-
         try {
             $this->_update($slug, $titleEn, $titleRu);
         } catch (OrderStatusSearchException $e) {

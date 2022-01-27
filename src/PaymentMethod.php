@@ -31,10 +31,6 @@ class PaymentMethod extends Api implements PaymentMethodInterface
      */
     public function get(string $slug, string $titleEn, string $titleRu = ''): PaymentMethodInterface
     {
-        if (empty($titleRu)) {
-            $titleRu = $titleEn;
-        }
-
         try {
             $this->_update($slug, $titleEn, $titleRu);
         } catch (PaymentMethodSearchException $e) {
