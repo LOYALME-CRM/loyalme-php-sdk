@@ -10,11 +10,10 @@ class PaymentStatus extends Api implements PaymentStatusInterface
     const STATUS_NOT_ACTIVE = 0;
     const STATUS_ACTIVE = 1;
 
-    const LIST_OF_PAYMENT_STATUSES = "payment-status";
-    const CREATE_PAYMENT_STATUS = "payment-status";
-    const SHOW_PAYMENT_STATUS = "payment-status/%d";
-    const UPDATE_PAYMENT_STATUS = "payment-status/%d";
-    const DELETE_PAYMENT_STATUS = "payment-status/%d";
+    const LIST_OF_PAYMENT_STATUSES = 'payment-status';
+    const CREATE_PAYMENT_STATUS = 'payment-status';
+    const UPDATE_PAYMENT_STATUS = 'payment-status/%d';
+    const DELETE_PAYMENT_STATUS = 'payment-status/%d';
 
     /**
      * @var array
@@ -38,17 +37,16 @@ class PaymentStatus extends Api implements PaymentStatusInterface
     }
 
     /**
-     * @param string $titleEn
      * @param string $slug
+     * @param string $titleEn
      * @param string $titleRu
      * @param int $isActive
      * @return PaymentStatusInterface
-     * @throws Exceptions\LoyalmePhpSdkException
      */
-    public function get(string $titleEn, string $slug, string $titleRu = '', int $isActive = self::STATUS_ACTIVE): PaymentStatusInterface
+    public function get(string $slug, string $titleEn, string $titleRu = '', int $isActive = self::STATUS_ACTIVE): PaymentStatusInterface
     {
         $this->findBySlug($slug);
-        $this->fillParams($titleEn, $slug, $titleRu, $isActive);
+        $this->fillParams($slug, $titleEn, $titleRu, $isActive);
         if (empty($this->lastSearchResult['data'][0])) {
             $this->create();
         } else {
@@ -74,17 +72,17 @@ class PaymentStatus extends Api implements PaymentStatusInterface
     }
 
     /**
-     * @param string $titleEn
      * @param string $slug
+     * @param string $titleEn
      * @param string $titleRu
      * @param int $isActive
      * @return array
      */
-    protected function fillParams(string $titleEn, string $slug, string $titleRu = '', int $isActive = self::STATUS_ACTIVE): array
+    protected function fillParams(string $slug, string $titleEn, string $titleRu = '', int $isActive = self::STATUS_ACTIVE): array
     {
         $this->paramsArray = [
-            'title_en' => $titleEn,
             'slug' => $slug,
+            'title_en' => $titleEn,
             'title_ru' => $titleRu,
             'is_active' => $isActive,
         ];
@@ -126,7 +124,7 @@ class PaymentStatus extends Api implements PaymentStatusInterface
      * @throws Exceptions\LoyalmePhpSdkException
      * @throws PaymentStatusException
      */
-    public function delete(string $slug): PaymentStatusInterface
+    private function delete(string $slug): PaymentStatusInterface
     {
         $this->findBySlug($slug);
         if (empty($this->lastSearchResult['data'][0])) {
