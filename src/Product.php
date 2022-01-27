@@ -6,15 +6,13 @@ use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductException;
 use LoyalmeCRM\LoyalmePhpSdk\Exceptions\ProductSearchException;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\CategoryInterface;
 use LoyalmeCRM\LoyalmePhpSdk\Interfaces\ProductInterface;
-use const src\API_URL;
 
 class Product extends Api implements ProductInterface
 {
-    const LIST_OF_PRODUCTS = "product";
-    const CREATE_PRODUCT = "product";
-    const SHOW_PRODUCT = "product/%d";
-    const UPDATE_PRODUCT = "product/%d";
-    const DELETE_PRODUCT = "product/%d";
+    const LIST_OF_PRODUCTS = 'product';
+    const CREATE_PRODUCT = 'product';
+    const UPDATE_PRODUCT = 'product/%d';
+    const DELETE_PRODUCT = 'product/%d';
 
     const PRODUCT_STATUS_NOT_ACTIVE = 0;
     const PRODUCT_STATUS_ACTIVE = 1;
@@ -34,11 +32,11 @@ class Product extends Api implements ProductInterface
     }
 
     /**
-     * @param string $title
-     * @param float $price
-     * @param string|null $photo
      * @param int|null $extItemId
      * @param string|null $barcode
+     * @param string|null $title
+     * @param float|null $price
+     * @param string|null $photo
      * @param int $isActive
      * @param int $typeId
      * @param float $accrualRate
@@ -49,11 +47,11 @@ class Product extends Api implements ProductInterface
      * @throws ProductException
      */
     public function get(
-        int $extItemId = null,
-        string $barcode = null,
-        string $title = null,
-        float $price = null,
-        string $photo = null,
+        ?int $extItemId = null,
+        ?string $barcode = null,
+        ?string $title = null,
+        ?float $price = null,
+        ?string $photo = null,
         int $isActive = 1,
         int $typeId = 1,
         float $accrualRate = 1,
@@ -65,19 +63,16 @@ class Product extends Api implements ProductInterface
         if (empty($extItemId) && empty($barcode)) {
             throw new ProductException('Parameters [extItemId] or [barcode] must be filled.');
         }
-        if (empty($title) || empty($price)) {
-            throw new ProductException('Parameters [title] and [price] must be both filled. It\'s required fields!');
-        }
         $categoriesArray = $this->processCategoriesArray($categories);
         try {
             $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
-            $result = $this->update($id, $title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categoriesArray, $aliases, $customFields);
+            $result = $this->_update($id, $title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categoriesArray, $aliases, $customFields);
             return $result;
         } catch (ProductSearchException $e) {
-            if (empty($categories)) {
-                throw new ProductException('Categories can not be empty', 422, ['categories' => 'must be filled']);
+            if (empty($title) || empty($price)) {
+                throw new ProductException('Parameters [title] and [price] must be both filled. It\'s required fields!');
             }
-            $result = $this->create($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categoriesArray, $aliases, $customFields);
+            $result = $this->_create($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categoriesArray, $aliases, $customFields);
             return $result;
         }
     }
@@ -89,10 +84,6 @@ class Product extends Api implements ProductInterface
      */
     private function processCategoriesArray(array $array = []): array
     {
-        if (empty($array)) {
-            throw new ProductException('The category parameter is required and must be filled', 422);
-        }
-
         return array_map(function ($value) {
             if (!$value instanceof CategoryInterface) {
                 throw new ProductException('Category data must be an array of objects of the Category class', 422);
@@ -134,14 +125,14 @@ class Product extends Api implements ProductInterface
         if (isset($result['data'][0]['id'])) {
             return $result['data'][0]['id'];
         } else {
-            throw new  ProductSearchException('Ошибка при поиске через API: ', $result['status_code']);
+            throw new  ProductSearchException('Error when searching via API: ', $result['status_code']);
         }
     }
 
     /**
      * @param int $id
      * @param string $title
-     * @param float $price
+     * @param float|null $price
      * @param string|null $photo
      * @param int|null $extItemId
      * @param string|null $barcode
@@ -153,13 +144,13 @@ class Product extends Api implements ProductInterface
      * @param array $customFields
      * @return ProductInterface
      */
-    protected function update(
+    protected function _update(
         int $id,
         string $title,
-        float $price,
-        string $photo = null,
-        int $extItemId = null,
-        string $barcode = null,
+        ?float $price = null,
+        ?string $photo = null,
+        ?int $extItemId = null,
+        ?string $barcode = null,
         int $isActive = 1,
         int $typeId = 1,
         float $accrualRate = 1,
@@ -187,7 +178,7 @@ class Product extends Api implements ProductInterface
 
     /**
      * @param string $title
-     * @param float $price
+     * @param float|null $price
      * @param string|null $photo
      * @param int|null $extItemId
      * @param string|null $barcode
@@ -201,10 +192,10 @@ class Product extends Api implements ProductInterface
      */
     private function fillParams(
         string $title,
-        float $price,
-        string $photo = null,
-        int $extItemId = null,
-        string $barcode = null,
+        ?float $price = null,
+        ?string $photo = null,
+        ?int $extItemId = null,
+        ?string $barcode = null,
         int $isActive = 1,
         int $typeId = 1,
         float $accrualRate = 1,
@@ -215,20 +206,28 @@ class Product extends Api implements ProductInterface
     {
         $parametersArray = [
             'title' => $title,
-            'ext_item_id' => $extItemId,
-            'barcode' => $barcode,
-            'price' => $price,
             'is_active' => $isActive,
-            'ext_photo_url' => $photo,
             'type_id' => $typeId,
-            'categories' => $categories,
             'accrual_rate' => $accrualRate,
+            'categories' => $categories,
             'aliases' => $aliases,
         ];
+        if (!is_null($price)) {
+            $parametersArray['price'] = $price;
+        }
+        if (!is_null($photo)) {
+            $parametersArray['ext_photo_url'] = $photo;
+        }
+        if (!is_null($extItemId)) {
+            $parametersArray['ext_item_id'] = $extItemId;
+        }
+        if (!is_null($barcode)) {
+            $parametersArray['barcode'] = $barcode;
+        }
+
         foreach ($customFields as $key => $value) {
             $parametersArray[$key] = $value;
         }
-        Log::printData($parametersArray, 'Массив параметров');
         return $parametersArray;
     }
 
@@ -246,12 +245,12 @@ class Product extends Api implements ProductInterface
      * @param array $customFields
      * @return ProductInterface
      */
-    protected function create(
+    protected function _create(
         string $title,
         float $price,
-        string $photo = null,
-        int $extItemId = null,
-        string $barcode = null,
+        ?string $photo = null,
+        ?int $extItemId = null,
+        ?string $barcode = null,
         int $isActive = 1,
         int $typeId = 1,
         float $accrualRate = 1,
@@ -273,7 +272,7 @@ class Product extends Api implements ProductInterface
      * @throws ProductException
      * @throws ProductSearchException
      */
-    public function delete(string $extItemId = null, string $barcode = null): ProductInterface
+    private function delete(string $extItemId = null, string $barcode = null): ProductInterface
     {
         $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
         $url = sprintf(self::DELETE_PRODUCT, $id);
