@@ -103,5 +103,29 @@ class ProductTest extends Unit
         $this->assertEquals($product->price, $product2->price);
         $this->assertEquals(count($categories2), count($product2->categories));
         $this->assertEquals($product->type_id, $product2->type_id);
+
+        $title3 = 'productTestSDK-3' . rand(1000, 9999);
+        $categories3 = [];
+        $productObject3 = new Product($this->_connection);
+        $product3 = $productObject3->get(
+            null,
+            $barcode,
+            $title3,
+            null,
+            null,
+            1,
+            1,
+            1,
+            $categories3
+        );
+
+        $this->assertTrue($product3 instanceof Product);
+        $this->assertEquals($product->id, $product3->id);
+        $this->assertEquals($extItemId, $product3->ext_item_id);
+        $this->assertEquals($product->barcode, $product3->barcode);
+        $this->assertEquals($title3, $product3->title);
+        $this->assertEquals($product->price, $product3->price);
+        $this->assertEquals(count($categories3), count($product3->categories));
+        $this->assertEquals($product->type_id, $product3->type_id);
     }
 }

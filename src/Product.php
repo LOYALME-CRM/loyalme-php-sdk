@@ -84,10 +84,6 @@ class Product extends Api implements ProductInterface
      */
     private function processCategoriesArray(array $array = []): array
     {
-        if (empty($array)) {
-            throw new ProductException('The category parameter is required and must be filled', 422);
-        }
-
         return array_map(function ($value) {
             if (!$value instanceof CategoryInterface) {
                 throw new ProductException('Category data must be an array of objects of the Category class', 422);
@@ -129,7 +125,7 @@ class Product extends Api implements ProductInterface
         if (isset($result['data'][0]['id'])) {
             return $result['data'][0]['id'];
         } else {
-            throw new  ProductSearchException('Ошибка при поиске через API: ', $result['status_code']);
+            throw new  ProductSearchException('Error when searching via API: ', $result['status_code']);
         }
     }
 
