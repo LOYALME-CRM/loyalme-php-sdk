@@ -63,7 +63,7 @@ class Product extends Api implements ProductInterface
         if (empty($extItemId) && empty($barcode)) {
             throw new ProductException('Parameters [extItemId] or [barcode] must be filled.');
         }
-        $categoriesArray = $this->processCategoriesArray($categories);
+        $categoriesArray = $this->_processCategoriesArray($categories);
         try {
             $id = $this->findByExtItemIdOrBarcode($extItemId, $barcode);
             $result = $this->_update($id, $title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categoriesArray, $aliases, $customFields);
@@ -82,7 +82,7 @@ class Product extends Api implements ProductInterface
      * @return array
      * @throws ProductException
      */
-    private function processCategoriesArray(array $array = []): array
+    private function _processCategoriesArray(array $array = []): array
     {
         return array_map(function ($value) {
             if (!$value instanceof CategoryInterface) {
@@ -160,7 +160,7 @@ class Product extends Api implements ProductInterface
     ): ProductInterface
     {
         $url = sprintf(self::UPDATE_PRODUCT, $id);
-        $data = $this->fillParams(
+        $data = $this->_fillParams(
             $title,
             $price,
             $photo,
@@ -190,7 +190,7 @@ class Product extends Api implements ProductInterface
      * @param array $customFields
      * @return array
      */
-    private function fillParams(
+    private function _fillParams(
         string $title,
         ?float $price = null,
         ?string $photo = null,
@@ -260,7 +260,7 @@ class Product extends Api implements ProductInterface
     ): ProductInterface
     {
         $url = self::CREATE_PRODUCT;
-        $data = $this->fillParams($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
+        $data = $this->_fillParams($title, $price, $photo, $extItemId, $barcode, $isActive, $typeId, $accrualRate, $categories, $aliases, $customFields);
         $result = $this->_connection->sendPostRequest($url, $data);
         return $this->_fill($result);
     }

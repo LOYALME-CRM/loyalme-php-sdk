@@ -67,15 +67,12 @@ class DeliveryMethod extends Api implements DeliveryMethodInterface
     protected function _findBySlug(string $slug): int
     {
         $url = self::LIST_OF_PAYMENT_METHOD;
-        $result = $this->_connection->sendGetRequest($url);
+        $result = $this->_connection->sendGetRequest($url, ['slug' => $slug]);
         $this->checkResponseForErrors($result);
-        $search = array_values(array_filter($result['data'], function ($innerArray) use ($slug) {
-            return $innerArray['slug'] == $slug;
-        }));
-        if (!isset($search[0]['id'])) {
+        if (!isset($result['data'][0]['id'])) {
             throw new DeliveryMethodSearchException(sprintf('Delivery method status slug:[%s] was not found', $slug), 404);
         }
-        $deliveryMethodId = (int) $search[0]['id'];
+        $deliveryMethodId = (int) $result['data'][0]['id'];
 
         return $deliveryMethodId;
     }

@@ -335,7 +335,11 @@ class Client extends Api implements ClientInterface
             }
 
             if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 0) {
-                $foundByEmail = true;
+                if ($externalId && $result['data'][0]['external_id']) {
+                    $result = null;
+                } else {
+                    $foundByEmail = true;
+                }
             } else {
                 $result = null;
             }
@@ -349,7 +353,11 @@ class Client extends Api implements ClientInterface
             }
 
             if (isset($result['meta']['pagination']['total']) && $result['meta']['pagination']['total'] > 0) {
-                $foundByPhone = true;
+                if ($externalId && $result['data'][0]['external_id']) {
+                    $result = null;
+                } else {
+                    $foundByPhone = true;
+                }
             } else {
                 $result = null;
             }
