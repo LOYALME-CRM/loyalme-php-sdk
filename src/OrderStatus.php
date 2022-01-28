@@ -67,15 +67,12 @@ class OrderStatus extends Api implements OrderStatusInterface
     protected function _findBySlug(string $slug): int
     {
         $url = self::LIST_OF_ORDER_STATUS;
-        $result = $this->_connection->sendGetRequest($url);
+        $result = $this->_connection->sendGetRequest($url, ['slug' => $slug]);
         $this->checkResponseForErrors($result);
-        $search = array_values(array_filter($result['data'], function ($innerArray) use ($slug) {
-            return $innerArray['slug'] == $slug;
-        }));
-        if (!isset($search[0]['id'])) {
+        if (!isset($result['data'][0]['id'])) {
             throw new OrderStatusSearchException(sprintf('Order status slug:[%s] was not found', $slug), 404);
         }
-        $orderStatusId = (int) $search[0]['id'];
+        $orderStatusId = (int) $result['data'][0]['id'];
 
         return $orderStatusId;
     }
