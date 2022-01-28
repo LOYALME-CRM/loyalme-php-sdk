@@ -1141,32 +1141,4 @@ class ClientTest extends Unit
         $this->assertEquals($client3->emails[0]['subscription_status'], 2);
         $this->assertEquals($client3->emails[0]['status'], 1);
     }
-
-    /*public function testTest()
-    {
-        $clientRest = new Client($this->_connection);
-        $client = $clientRest->get(
-            rand(10000, 99999),
-            '2426872831375226',
-            'Катюха',
-            'Петрова',
-            null,
-            null,
-            null,
-            [
-                [
-                    'contact' => '79606224993',
-                    'subscribe_status' => 1,
-                    'validate_status' => 1,
-                ]
-            ],
-            [
-                [
-                    'contact' => 'Noisy19_8@mail.ru',
-                    'subscribe_status' => 1,
-                    'validate_status' => 1,
-                ]
-            ]
-        );
-    }*/
 }
