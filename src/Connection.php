@@ -51,7 +51,7 @@ class Connection implements ConnectionInterface
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [sprintf('Authorization: Bearer %s', $this->_token), 'accept: application/json', 'Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        if (in_array($method, [self::METHOD_POST, self::METHOD_PUT])) {
+        if (in_array($method, [self::METHOD_POST, self::METHOD_PUT, self::METHOD_DELETE])) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
         }
         $output = curl_exec($ch);
