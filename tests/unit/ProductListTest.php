@@ -170,7 +170,7 @@ class ProductListTest extends Unit
         }
     }
 
-    public function testUpdatingContentOfProductList()
+    private function _creatingTestData()
     {
         $time = time();
         $faker = Factory::create();
@@ -198,15 +198,81 @@ class ProductListTest extends Unit
         );
         $this->assertTrue($relatedProduct instanceof Product);
 
+        return [
+            'productList' => $productList,
+            'client' => $client,
+            'relatedProduct' => $relatedProduct,
+        ];
+    }
+
+    /**
+     * @param ProductListInterface $productList
+     * @param ClientInterface|null $client
+     * @param ProductInterface|null $relatedProduct
+     * @return void
+     */
+    public function _startTestClearingContentOfProductList(ProductListInterface $productList, ?ClientInterface $client = null, ?ProductInterface $relatedProduct = null): void
+    {
+        $extItemId = rand(100000, 999999);
+        $barcode = md5(date('Ymdhms') . rand(10000, 99999));
+        $title = 'productTestSDK-' . rand(1000, 9999);
+        $price = rand(1000, 9999);
+        $productObject = new Product($this->_connection);
+        $product1 = $productObject->get(
+            $extItemId,
+            $barcode,
+            $title,
+            $price
+        );
+        $this->assertTrue($product1 instanceof Product);
+
+        $extItemId = rand(100000, 999999);
+        $barcode = md5(date('Ymdhms') . rand(10000, 99999));
+        $title = 'productTestSDK-' . rand(1000, 9999);
+        $price = rand(1000, 9999);
+        $productObject2 = new Product($this->_connection);
+        $product2 = $productObject2->get(
+            $extItemId,
+            $barcode,
+            $title,
+            $price
+        );
+        $this->assertTrue($product2 instanceof Product);
+
+        $products = [$product1->id => $product1, $product2->id => $product2];
+        $content = $productList->updateContent($productList, $products, $client, $relatedProduct);
+        $this->_checkEqualsOfContent($content, $products, $client, $relatedProduct);
+
+        $this->assertTrue($productList->clear($productList));
+    }
+
+    public function testUpdatingContentOfProductList()
+    {
+        $res = $this->_creatingTestData();
         $productListTests = [
-            [$productList],
-            [$productList, $client],
-            [$productList, $client, $relatedProduct],
-            [$productList, null, $relatedProduct],
+            [$res['productList']],
+            [$res['productList'], $res['client']],
+            [$res['productList'], $res['client'], $res['relatedProduct']],
+            [$res['productList'], null, $res['relatedProduct']],
         ];
 
         foreach ($productListTests as $productListTest) {
             $this->_startTestUpdatingContentOfProductList($productListTest[0], $productListTest[1] ?? null, $productListTest[2] ?? null);
+        }
+    }
+
+    public function testClearingOfProductList()
+    {
+        $res = $this->_creatingTestData();
+        $productListTests = [
+            [$res['productList']],
+            [$res['productList'], $res['client']],
+            [$res['productList'], $res['client'], $res['relatedProduct']],
+            [$res['productList'], null, $res['relatedProduct']],
+        ];
+
+        foreach ($productListTests as $productListTest) {
+            $this->_startTestClearingContentOfProductList($productListTest[0], $productListTest[1] ?? null, $productListTest[2] ?? null);
         }
     }
 }

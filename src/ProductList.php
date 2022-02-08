@@ -150,11 +150,13 @@ class ProductList extends Api implements ProductListInterface
 
     /**
      * @param ProductListInterface $productList
-     * @param ClientInterface $client
-     * @param ProductInterface $relatedProduct
+     * @param array $products
+     * @param ClientInterface|null $client
+     * @param ProductInterface|null $relatedProduct
      * @return array
+     * @throws ProductListException
      */
-    public function updateContent(ProductListInterface $productList, array $products, ClientInterface $client = null, ProductInterface $relatedProduct = null): array
+    public function updateContent(ProductListInterface $productList, array $products, ?ClientInterface $client = null, ?ProductInterface $relatedProduct = null): array
     {
         $products = $this->_processProductsArray($products);
 
@@ -230,5 +232,37 @@ class ProductList extends Api implements ProductListInterface
         }
 
         return $content['data'];
+    }
+
+    /**
+     * @param ProductListInterface $productList
+     * @param ClientInterface|null $client
+     * @param ProductInterface|null $relatedProduct
+     * @return array
+     * @throws ProductListException
+     */
+    public function clear(ProductListInterface $productList, ?ClientInterface $client = null, ?ProductInterface $relatedProduct = null): bool
+    {
+        $urlRemovingProduct = sprintf(self::ACTION_REMOVE_PRODUCT, $productList->id);
+        $resultOfDeleteing = $this->_connection->sendDeleteRequest($urlRemovingProduct, [
+            'products' => null,
+            'related_product_id' => $relatedProduct->id ?? null,
+            'client_id' => $client->id ?? null,
+        ]);
+
+        if (!isset($resultOfDeleteing['data']['id'])) {
+            throw new ProductListException(sprintf('Unable to remove products from product list [%s]', $productList->system_name), 0, $resultOfDeleteing);
+        }
+
+        $urlContent = sprintf(self::ACTION_CONTENT, $productList->id);
+        $content = $this->_connection->sendGetRequest($urlContent, [
+            'related_product_id' => $relatedProduct->id ?? null,
+            'client_id' => $client->id ?? null,
+        ]);
+        if (!isset($content['data'])) {
+            throw new ProductListException(sprintf('Error getting content of product list [%s]', $productList->system_name), 0, $content);
+        }
+
+        return empty($content['data']);
     }
 }

@@ -75,10 +75,6 @@ ___
                 var_dump($e->getCode);
                 var_dump($e->getErrorMessage);
         }
-        
-        //Delete product
-        $productObject->delete($extItemId);
-        $productObject->delete(null, $barcode);
 
 ###### result:
     Product {
@@ -163,6 +159,53 @@ ___
 **Also you can refer to any property of the object directly:**
 
 `$productListAttributes = $productListObject->id;`
+
+#### Update product list content
+
+###### code
+    try{
+        $product = $productListObject->updateContent(
+            ProductListInterface $productList,
+            array $products,
+            ?ClientInterface $client = null,
+            ?ProductInterface $relatedProduct = null
+        );
+    } catch (ProductListException $e) {
+        var_dump($e->getErrorData);
+        var_dump($e->getCode);
+        var_dump($e->getErrorMessage);
+    }
+
+###### result:
+
+    array(
+        array(
+            "product_id" => 0,
+            "client_id" => 0,
+            "related_product_id" => 0,
+            "price_per_item" => 0,
+            "quantity" => 0
+        )
+    )
+
+#### Clear product list content
+
+###### code
+    try{
+        $product = $productListObject->updateContent(
+            ProductListInterface $productList,
+            ?ClientInterface $client = null,
+            ?ProductInterface $relatedProduct = null
+        );
+    } catch (ProductListException $e) {
+        var_dump($e->getErrorData);
+        var_dump($e->getCode);
+        var_dump($e->getErrorMessage);
+    }
+
+###### result:
+
+    bool
 
 ## OrderStatus:  
 ___
