@@ -243,7 +243,7 @@ class ProductListTest extends Unit
         $content = $productList->updateContent($productList, $products, $client, $relatedProduct);
         $this->_checkEqualsOfContent($content, $products, $client, $relatedProduct);
 
-        $this->assertTrue($productList->clear($productList));
+        $this->assertTrue($productList->clear($productList, $client, $relatedProduct));
     }
 
     public function testUpdatingContentOfProductList()
